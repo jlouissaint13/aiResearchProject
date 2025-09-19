@@ -61,10 +61,12 @@ def test_database():
     chroma.check_db()
 
 def question():
-    user_question = input("What is your question? ")
-    rag = Rag(chroma,user_question)
-    print(rag.model_run())
-
+    q = "y"
+    while q == "yes" or q == "y":
+        user_question = input("What is your question? ")
+        rag = Rag(chroma,user_question)
+        print(rag.model_run())
+        q = input("Would you like to ask another question?(Y/N) ").lower()
 
 if __name__ == '__main__':
     user_input = -1
