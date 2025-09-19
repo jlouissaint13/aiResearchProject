@@ -1,3 +1,8 @@
+import shutil
+
+from numpy.f2py.cfuncs import includes
+from openai import embeddings
+
 import chromadb
 import uuid
 import pathlib
@@ -6,10 +11,10 @@ import pathlib
 
 class ChromaManager:
     def __init__(self):
-        self.chroma_client = chromadb.Client()
-        self.collection = self.chroma_client.create_collection(name="my_collection")
+
         database_directory = pathlib.Path(__file__).parent / "chromadb"
-        client = chromadb.PersistentClient(database_directory)
+        self.client = chromadb.PersistentClient(path=database_directory)
+        self.collection = self.client.get_or_create_collection(name="my_collection")
 
     def store(self,chunk_list):
         for i in range(len(chunk_list)):
@@ -19,10 +24,20 @@ class ChromaManager:
              embeddings=[chunk_list[i].embedding]
             )
         print("data stored?" , self.collection.count())
-    #clears db
-    def reset(self):
-        self.chroma_client.reset()
+    #deletes db
+    def delete(self):
+        database_directory = pathlib.Path(__file__).parent / "chromadb"
+        if database_directory.exists():
+            shutil.rmtree(database_directory)
+
     #checks connection
     def heartbeat(self):
-        self.chroma_client.heartbeat()
+        self.client.heartbeat()
 
+
+    def check_db(self):
+        results = self.collection.get(
+            include=['documents','embeddings']
+        )
+        print(results['embeddings'])
+        print(results['documents'])

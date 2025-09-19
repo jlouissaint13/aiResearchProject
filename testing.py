@@ -1,8 +1,16 @@
+import sys
+
 from flask import Flask
 import pymupdf4llm
 import pathlib
 from ChunkSplitter import ChunkSplitter
 from ChromaManager import ChromaManager
+from EmbedHandler import EmbedHandler
+from Rag import Rag
+chroma = ChromaManager()
+chunkSplitter = ChunkSplitter()
+embedHandler = EmbedHandler()
+
 
 text = """
 Artificial Intelligence (AI) has rapidly become one of the most transformative technologies in the modern era. Over the last decade, the integration of AI into our everyday lives has accelerated at an unprecedented pace. From the rise of digital assistants like Siri and Alexa to advanced recommendation systems on platforms such as Netflix, YouTube, and Amazon, AI is shaping how we interact with technology, consume information, and make decisions. Yet the story of AI is not just about technological progress—it is also about social impact, ethical concerns, and the reshaping of economies and labor markets.
@@ -41,9 +49,43 @@ def pdf_to_text():
 
     pathlib.Path(output_directory / "result.md").write_text(md_text,encoding="utf-8")
 
+    return md_text
 
-def test_chunkSplit(text):
-    chunksplitter = ChunkSplitter()
-    chunksplitter.enumurate_chunks(text)
+def test_chunk_embedding(text):
+    chunks = chunkSplitter.semantic_split(text)
+
+    embedHandler.store_chunks_and_embeddings(chunks)
+
+def test_database():
+
+    chroma.check_db()
+
+def question():
+    user_question = input("What is your question? ")
+    rag = Rag(chroma,user_question)
+    print(rag.model_run())
+
+
 if __name__ == '__main__':
-    test_chunkSplit(text)
+    user_input = -1
+
+    while user_input != 6:
+        try:
+            print("Please make a selection\n1)Ask a question\n2)Insert a pdf\n3)Check the database\n4)Delete the database\n5)Choose your model(Work In Progress)\n6)Quit")
+            user_input = int(input())
+
+
+            match user_input:
+                case 1: question()
+                case 2: test_chunk_embedding(pdf_to_text()) #pdf_to_text()
+                case 3: chroma.check_db()
+                case 4: chroma.delete()
+                case 5: sys.exit(1)
+                case 6: sys.exit(0)
+                case _: print("Invalid selection")
+        except ValueError: print("Please Enter A Numerical Value")
+
+
+
+
+
