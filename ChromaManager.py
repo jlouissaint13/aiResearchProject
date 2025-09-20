@@ -1,10 +1,6 @@
 import shutil
 
-from numpy.f2py.cfuncs import includes
-from openai import embeddings
-
 import chromadb
-import uuid
 import pathlib
 
 
@@ -33,6 +29,7 @@ class ChromaManager:
     #checks connection
     def heartbeat(self):
         self.client.heartbeat()
+
 
 
     def check_db(self):

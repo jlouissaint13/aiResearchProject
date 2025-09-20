@@ -1,5 +1,4 @@
 #not being used right now but later I want the user to be able to choose by speed or accuracy which is why I have a list of models instead of just one
-from langchain.prompts import ChatPromptTemplate
 class RagConfiguration:
 
     EMBEDDING_MODEL = [

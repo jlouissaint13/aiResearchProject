@@ -1,7 +1,4 @@
-from langchain.chains.llm import LLMChain
-from sympy.polys.polyconfig import query
 
-from ChromaManager import ChromaManager
 from sentence_transformers import SentenceTransformer
 from langchain_ollama.llms import OllamaLLM
 from langchain_core.prompts import ChatPromptTemplate
@@ -31,7 +28,7 @@ class Rag:
         return retrieved_docs
 
     def context_Text(self):
-        context_text = "\n\n".join(self.fetch_query_response())
+        context_text = "\n".join(self.fetch_query_response())
 
         return context_text
 
