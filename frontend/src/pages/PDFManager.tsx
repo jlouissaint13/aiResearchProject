@@ -5,6 +5,7 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import {useNavigate} from "react-router-dom";
+import * as pdfjsLib from 'pdfjs-dist/webpack';
 
 
 const initialPdfs = [
@@ -18,31 +19,46 @@ const PdfManager = () => {
     const [pdfs, setPdfs] = useState(initialPdfs);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
-
+    
+    
     const fileInputRef = useRef(null);
 
     const handleBack = () => {
         navigate("/Choice")
     };
-
+    
+    
     const handleAddPdf = () => {
         fileInputRef.current.click();
     };
+    
+  async function extractMetaData(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf= await pdfjsLib.getdocument({data: arrayBuffer}).promise
+        const metadata = await pdf.getMetadata();
+        
+        
+        return metadata
+    }
 
-    const handleFileChange = (event) => {
+
+
+    async function handleFileChange(event) {
         const files = event.target.files;
-        
-        
+
         if (files.length > 0) {
             const newFile = files[0];
-            const newPdf = { name: newFile.name };
+            const metadata = await extractMetaData(newFile);  
+            console.log("Title:", metadata.info.Title);
 
+            const newPdf = { name: newFile.name };
             setPdfs(prevPdfs => [...prevPdfs, newPdf]);
+
             alert(`PDF selected and added: ${newFile.name}`);
 
             event.target.value = null;
         }
-    };
+    }
 
     const handleDeletePdf = (id) => {
         console.log(`Deleting PDF with ID: ${id}`);
@@ -117,10 +133,10 @@ const PdfManager = () => {
                 }}
             >
                 <Typography variant="h5" component="h1" sx={{ color: '#e0e0e0', fontWeight: 'bold' }}>
-                    Manage Uploaded Documents
+                    Manage Documents
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#8e8e8e', textAlign: 'center' }}>
-                    These documents are available for context-aware chat.
+                    These documents are available for context-aware chat.(Max 10MB)
                 </Typography>
 
                 <TextField

@@ -4,7 +4,6 @@ from flask import Blueprint, request, jsonify
 from backend.services.MessageService import MessageService
 from backend.services.RagService import RagService
 from backend.services.ConversationService import ConversationService
-from backend.services.ConversationService import ConversationService
 message_service = MessageService()
 rag_service = RagService()
 conversation_service = ConversationService()
@@ -33,12 +32,12 @@ def message_handler():
     message_id = data.get("message_id")
     user_id = data.get("user_id")
     conversation_id = data.get("conversation_id")
-    
-    message_service.send_user_message(message_id, conversation_id, user_content, role, user_id)
+    logged_in = data.get("logged_in")
+    message_service.send_user_message(message_id, conversation_id, user_content, role, user_id,logged_in)
     
     
                                           
-    response = message_service.send_model_message(conversation_id,user_id,user_content)
+    response = message_service.send_model_message(conversation_id,user_id,user_content,logged_in)
 
     conversation_service.conversation_last_modified(conversation_id,user_id)
 

@@ -1,6 +1,5 @@
 from backend.repository.UserSettingsRepository import UserSettingsRepository
 from backend.models.UserSettingsModel import UserSettingsModel
-from backend.repository.RegisterRepository import RegisterRepository
 class UserSettingsService:
     def __init__(self):
         self.user_settings_repository = UserSettingsRepository()

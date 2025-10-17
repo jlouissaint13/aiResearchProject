@@ -64,6 +64,9 @@ const Choice = () => {
     
 
     // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
+    // @ts-ignore
     return (
         <Box
             sx={{

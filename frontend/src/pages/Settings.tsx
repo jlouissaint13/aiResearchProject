@@ -129,7 +129,7 @@ const Settings = () => {
             alert(error)
         }
     }
-
+    //add regex later
     const isEmailValid = (email:string): boolean => {
         return email.includes('@') && email.includes('.com');
     }

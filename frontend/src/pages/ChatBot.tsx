@@ -36,7 +36,7 @@ const ChatBot = () => {
     const valueRef = useRef(0)
     const navigate = useNavigate();
     const [selectedModel, setSelectedModel] = useState(AVAILABLE_MODELS[0].id);
-
+    const [isLoggedIn,setIsLoggedIn] = useState<boolean>()
     interface RecentChat {
         title: string;
         conversationID: string;
@@ -48,6 +48,21 @@ const ChatBot = () => {
         content: string;
         sender: 'user' | 'model';
     }
+
+    useEffect(() => {
+        loginStatus()
+    }, []);
+    function loginStatus() : void {
+        if (localStorage.getItem("loggedIn") === "true") {
+            setIsLoggedIn(true);
+            return 
+        }
+        
+        setIsLoggedIn(false)
+        
+    }
+    
+    
 
 // @ts-ignore
     function sortChats(chats) {
@@ -128,7 +143,7 @@ const ChatBot = () => {
             }
 
         } catch (error) {
-            console.error("Error getting conversations:", error);
+            alert("Error loading conversations")
             return;
         }
     }
@@ -305,7 +320,12 @@ const ChatBot = () => {
             sender: 'user',
             message_id: uuidv4(),
             user_id: localStorage.getItem("userID"),
-            conversation_id : sessionStorage.getItem("conversationID")
+            conversation_id : sessionStorage.getItem("conversationID"),
+            logged_in : localStorage.getItem("logged_in")
+            /* The reason that I want to check for this is because we should skip database calls
+          no reason to store messages if the user is not logged in
+           */
+            
         };
 
 // @ts-ignore
@@ -547,9 +567,11 @@ const ChatBot = () => {
                     <Button
                         onClick={handleSettingsClick}
                         disabled={isLoading}
+                        
                         variant="text"
                         startIcon={<SettingsIcon />}
                         sx={{
+                            display: isLoggedIn ? 'inline-flex' : 'none' ,
                             color: '#e0e0e0',
                             justifyContent: 'flex-start',
                             textTransform: 'none',
