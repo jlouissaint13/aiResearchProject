@@ -36,8 +36,6 @@ if __name__ == '__main__':
                     pass
                 case 3:
                     chroma_controller.request_store_pdf()
-                case 4:
-                    
                 case 5:
                     chroma.check_db()
                 case 6:
