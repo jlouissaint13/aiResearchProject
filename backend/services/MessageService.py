@@ -1,6 +1,5 @@
 from backend.services.RagService import RagService 
 from backend.repository.MessageRepository import MessageRepository
-from backend.services.ConversationService import ConversationService
 import uuid
 class MessageService:
     def __init__(self):
@@ -9,7 +8,6 @@ class MessageService:
         
     def send_user_message(self, message_id, conversation_id, content, role, user_id,logged_in):
         if logged_in == 'true':
-            print("saving messages user")
             self.message_repository.insert_message_by_id(message_id, conversation_id, content, role, user_id)
         
         
@@ -27,7 +25,6 @@ class MessageService:
         role = 'model'
         content = self.rag_service.response(user_content)
         if logged_in == 'true':
-            print("saving model messages user")
             self.message_repository.insert_message_by_id(model_message_id,conversation_id,content,role,user_id) 
         
         

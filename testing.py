@@ -3,12 +3,10 @@ import time
 from backend.repository.ChromaRepository import ChromaRepository
 from setup.Startup import Startup
 from backend.services.RagService import RagService
-from backend.repository.APIKeyRepository import APIKeyRepository
 from backend.controllers.ChromaController import ChromaController
 
 chroma = ChromaRepository()
 startup = Startup()
-api_key = APIKeyRepository()
 chroma_controller = ChromaController()
 
 if __name__ == '__main__':
@@ -39,7 +37,7 @@ if __name__ == '__main__':
                 case 3:
                     chroma_controller.request_store_pdf()
                 case 4:
-                    api_key.get_key()
+                    
                 case 5:
                     chroma.check_db()
                 case 6:
