@@ -1,10 +1,18 @@
 from backend.services.ChromaService import ChromaService
+from flask import Blueprint,request
 
-class ChromaController:
-    def __init__(self):
-        self.chromaService = ChromaService()
-    def request_store_pdf(self):
-        pdf_path = input("Please enter the file path of the pdf: ")
 
-        self.chromaService.store_file_chroma(pdf_path)
 
+chroma_blueprint = Blueprint("/chroma",__name__)
+
+
+  
+chromaService = ChromaService()
+
+
+@chroma_blueprint.route()
+def request_store_pdf():
+   # pdf_path = input("Please enter the file path of the pdf: ")
+
+    #chromaService.store_file_chroma(pdf_path)
+    pass

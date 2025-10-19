@@ -17,6 +17,9 @@ electron.contextBridge.exposeInMainWorld("ipcRenderer", {
     const [channel, ...omit] = args;
     return electron.ipcRenderer.invoke(channel, ...omit);
   }
-  // You can expose other APTs you need here.
-  // ...
+});
+electron.contextBridge.exposeInMainWorld("fileAPI", {
+  getFilePath: (file) => {
+    return file.path || "";
+  }
 });

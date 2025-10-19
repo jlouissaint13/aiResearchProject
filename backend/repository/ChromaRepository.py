@@ -13,9 +13,7 @@ class ChromaRepository:
         self.collection = self.client.get_or_create_collection(name="my_collection")
 
     def store(self, chunk_embed_list, metadata_dto):
-        if self.hash_exists(metadata_dto.hash_value):
-            print("PDF is already stored!")
-            return
+        
 
         ids = []
         documents = []
@@ -45,6 +43,7 @@ class ChromaRepository:
     )
 
         print("data stored?", self.collection.count())
+        return 200
 
 
 
@@ -63,6 +62,8 @@ class ChromaRepository:
         database_directory = pathlib.Path(__file__).parent / "chromadb"
         if database_directory.exists():
             shutil.rmtree(database_directory)
+            
+            
 
     #checks connection
     def heartbeat(self):

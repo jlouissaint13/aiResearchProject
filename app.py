@@ -8,6 +8,8 @@ from backend.controllers.RagController import rag_blueprint
 from backend.controllers.RegisterController import register_blueprint
 from backend.controllers.UserSettingsController import user_settings_blueprint
 from backend.controllers.PDFManagerController import pdf_blueprint
+
+
 app = Flask(__name__)
 
 
@@ -19,8 +21,8 @@ app.register_blueprint(login_blueprint,url_prefix="/login")
 app.register_blueprint(conversation_blueprint,url_prefix="/conversation")
 app.register_blueprint(message_blueprint,url_prefix="/message")
 app.register_blueprint(user_settings_blueprint,url_prefix="/user_settings")
-
 app.register_blueprint(pdf_blueprint,url_prefix="/pdf_manager")
+
 CORS(app,origins="*")
 
 if __name__ == '__main__':

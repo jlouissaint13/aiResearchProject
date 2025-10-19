@@ -1,18 +1,17 @@
-import { useState, useRef } from 'react';
-import { Box, Typography, Button, IconButton, List, ListItem, ListItemText, ListItemIcon, ListItemButton, TextField } from '@mui/material';
+import {useEffect, useRef, useState} from 'react';
+import {
+    Box, Button, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, TextField, Typography
+} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import {useNavigate} from "react-router-dom";
-import * as pdfjsLib from 'pdfjs-dist/webpack';
-
+import axios from 'axios';
 
 const initialPdfs = [
-    {  name: 'test_a.pdf' },
-    {  name: 'test_b.pdf' },
-    {  name: 'test_3.pdf' },
-    {  name: 'test_4.pdf' },
+    { id: 101, name: 'a', filePath: 'uploads/test_a.pdf' },
+   
 ];
 
 const PdfManager = () => {
@@ -32,42 +31,127 @@ const PdfManager = () => {
         fileInputRef.current.click();
     };
     
-  async function extractMetaData(file) {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdf= await pdfjsLib.getdocument({data: arrayBuffer}).promise
-        const metadata = await pdf.getMetadata();
-        
-        
-        return metadata
+
+    function extractFileInfo(file: File) {
+        const metadata = {
+            fileName: file.name || '',
+            filePath: (window as any).fileAPI.getFilePath(file),
+            fileSize: file.size || 0,
+           
+        };
+
+        return metadata;
     }
 
 
 
     async function handleFileChange(event) {
         const files = event.target.files;
-
         if (files.length > 0) {
             const newFile = files[0];
-            const metadata = await extractMetaData(newFile);  
-            console.log("Title:", metadata.info.Title);
-
+            
+            const fileInfo = extractFileInfo(newFile); 
             const newPdf = { name: newFile.name };
-            setPdfs(prevPdfs => [...prevPdfs, newPdf]);
-
-            alert(`PDF selected and added: ${newFile.name}`);
-
+            const fileData = {
+                file_path: fileInfo.filePath,
+                file_name: newFile.name,
+                user_id: localStorage.getItem("userID")
+            }
+            try {
+                const response = await axios.post('http://localhost:8000/pdf_manager/insert_pdf', fileData);
+                
+                
+                if (response.status === 200) {
+                    alert("PDF added successfully")
+                    await retrieveAllPDFS();
+                    return
+                }
+                
+            }catch (error) {
+               if (axios.isAxiosError(error)) {
+                   const status = error.response?.status
+                   
+                   if (status === 409) {
+                       alert("PDF has already been added")
+                   }
+                   
+               }
+                   
+            }
+            
             event.target.value = null;
         }
     }
 
-    const handleDeletePdf = (id) => {
-        console.log(`Deleting PDF with ID: ${id}`);
-        setPdfs(prevPdfs => prevPdfs.filter(pdf => pdf.id !== id));
+    useEffect(() => {
+       retrieveAllPDFS()
+    }, []);
+    
+    async function retrieveAllPDFS() {
+        const data = {
+            user_id: localStorage.getItem('userID')
+        }
+        try {
+            const response = await axios.post('http://localhost:8000/pdf_manager/retrieve_all_pdfs',data)
+            
+            const pdfData = response.data
+            
+            const formattedPDFs = pdfData.map((pdf: { pdf_id: any; pdf_name: string; file_path: string; }) =>({
+                id: pdf.pdf_id,
+                name: pdf.pdf_name,
+                filePath: pdf.file_path
+            }));
+
+            setPdfs(formattedPDFs)
+           
+
+           
+            
+        }catch (error) {
+            alert(error)
+        }
+        
+    }
+    
+    
+    const handleDeletePdf = async (name,file_path) => {
+
+        const isConfirmed = window.confirm(
+            `Are you sure you want to delete the PDF titled: "${name}"? This action cannot be undone.`
+        );
+        
+        if (!isConfirmed) {
+            return
+        }
+        const dataInfo = {
+            user_id : localStorage.getItem("userID"),
+            file_path: file_path
+        };
+        try {
+            const response = await axios.delete('http://localhost:8000/pdf_manager/delete_pdf', {
+                data: dataInfo
+            });
+            
+            
+            if (response.status === 200) {
+                await retrieveAllPDFS()
+                
+            }
+            
+            
+            
+        }catch (error) {
+            
+        }
     };
 
     const filteredPdfs = pdfs.filter(pdf =>
         pdf.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    
+    
+    
+    
 
     return (
         <Box
@@ -191,7 +275,7 @@ const PdfManager = () => {
                                     key={pdf.id}
                                     disablePadding
                                     secondaryAction={
-                                        <IconButton edge="end" aria-label="delete" onClick={() => handleDeletePdf(pdf.id)} sx={{ color: '#f44336' }}>
+                                        <IconButton edge="end" aria-label="delete" onClick={() => handleDeletePdf(pdf.name,pdf.filePath)} sx={{ color: '#f44336' }}>
                                             <DeleteIcon />
                                         </IconButton>
                                     }

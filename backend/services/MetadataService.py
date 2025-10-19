@@ -12,13 +12,13 @@ class MetadataServie:
         self.metadata_dto.author = str(self.reader.metadata.author)
         self.metadata_dto.created_at = str(self.reader.metadata.creation_date)
         self.metadata_dto.modified_at = str(self.reader.metadata.modification_date)
-        self.metadata_dto.hash_value = str(self.hash_pdf(self.pdf_path))
+        self.metadata_dto.hash_value = str(self.hash_pdf())
         self.metadata_dto.file_name = str(file_name)
         return self.metadata_dto
 
-    def hash_pdf(self,pdf_path):
+    def hash_pdf(self):
         hash_func = hashlib.new('sha256')
-        with open(pdf_path,'rb') as f:
+        with open(self.pdf_path,'rb') as f:
             while True:
 
                 data = f.read(131072) #buffer size

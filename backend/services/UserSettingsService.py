@@ -10,7 +10,7 @@ class UserSettingsService:
         username = user_settings_dto.username
         password = user_settings_dto.password
 
-        if self.user_settings_repository.user_exists(user_id,email,username):
+        if self.user_exists(user_id,email,username):
             return 409
         
         
@@ -19,6 +19,11 @@ class UserSettingsService:
             return 200
         self.user_settings_repository.update_user_info_by_user_id_no_pw(user_id,email,username)
         return 200
+    
+    
+    def user_exists(self,user_id,email,username):
+        return self.user_settings_repository.user_exists(user_id,email.email,username)
+    
     
     def get_user_info(self,user_id):
        return dict(self.user_settings_repository.get_user_info_for_settings_page_by_user_id(user_id))

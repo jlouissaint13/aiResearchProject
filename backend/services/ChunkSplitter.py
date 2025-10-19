@@ -1,4 +1,4 @@
-from langchain.text_splitter import MarkdownTextSplitter
+from langchain_text_splitters import MarkdownTextSplitter
 import nltk
 from nltk.tokenize import sent_tokenize
 

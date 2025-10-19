@@ -18,7 +18,6 @@ const Choice = () => {
 
     const menuItemsLoggedIn = [
         {text: "Chat", icon: <LiveHelpIcon />, value: "chat" },
-        {text: "Quick Search", icon: <SearchIcon /> , value: "quickSearch" },
         {text: "PDF Manager", icon: <PictureAsPdfIcon />, value: "checkDB" },
         {text: "Enter API Key", icon: <VpnKeyIcon /> , value: "apiKey" },
         {text: "Settings", icon:<SettingsIcon /> , value: "settings"},
@@ -34,7 +33,6 @@ const Choice = () => {
     function handleMenu(value:string) {
         switch (value) {
             case "chat": navigate("/ChatBot"); break;
-            case "quickSearch": break;
             case "insertPDF": navigate("/uploadPDF"); break;
             case "apiKey": navigate("/StoreKey"); break;
             case "checkDB": navigate("/PDFManager"); break;

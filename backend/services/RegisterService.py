@@ -12,7 +12,7 @@ class RegisterService:
         email = register_model.email
         username = register_model.username
 
-        if self.registerRepository.user_exists(register_model.email, register_model.username):
+        if self.user_exists(email,username):
             return False
 
         password = self.password_hash(register_model.password)
@@ -31,3 +31,7 @@ class RegisterService:
         hashed_string = pw_hash.decode("utf-8")
 
         return hashed_string
+    
+    
+    def user_exists(self,email,username):
+        return self.registerRepository.user_exists(email,username)
