@@ -15,7 +15,8 @@ class ChromaService:
         metadata_info = metadata.get_metadata_dto(file_name)
         
         if self.hash_exists(metadata_info):
-            return 409
+            print("hash exists but may be on different account so we won't return 409 anymore")
+            return None 
         
         
         md_text = pymupdf4llm.to_markdown(pdf_path)
@@ -30,3 +31,8 @@ class ChromaService:
 
     def hash_exists(self, metadata):
         return self.chroma_repository.hash_exists(metadata.hash_value)
+    
+    
+    
+    def delete_from_chroma_db(self,hash_value):
+        self.chroma_repository.delete_chunks_by_hash_value(hash_value)

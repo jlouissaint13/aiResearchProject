@@ -1,4 +1,3 @@
-
 import { Box, Typography, List, ListItem, ListItemButton, ListItemText, ListItemIcon} from '@mui/material';
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
 import SearchIcon from '@mui/icons-material/Search';
@@ -12,8 +11,6 @@ import {useEffect} from "react";
 const Choice = () => {
 
 
-
-
     const navigate = useNavigate()
 
     const menuItemsLoggedIn = [
@@ -23,14 +20,14 @@ const Choice = () => {
         {text: "Settings", icon:<SettingsIcon /> , value: "settings"},
         {text: "Logout", icon: <ExitToAppIcon />, value: "logout" }
     ];
-    
+
     const guestMenuItems = [
         {text: "Chat", icon: <LiveHelpIcon />, value: "chat" },
         {text: "Quick Search", icon: <SearchIcon /> , value: "quickSearch" },
         {text: "Exit", icon: <ExitToAppIcon />, value: "logout" }
     ]
 
-    function handleMenu(value:string) {
+    function handleMenu(value) {
         switch (value) {
             case "chat": navigate("/ChatBot"); break;
             case "insertPDF": navigate("/uploadPDF"); break;
@@ -47,24 +44,20 @@ const Choice = () => {
     }
 
     useEffect(() => {
-        
+
     }, []);
 
 
 
-    function menuItemLogic(): any {
+    function menuItemLogic() {
         if (localStorage.getItem("loggedIn") === "true")
             return menuItemsLoggedIn;
-        
+
         return guestMenuItems;
     }
-    
-    
 
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
-    // @ts-ignore
+
+
     return (
         <Box
             sx={{
@@ -84,46 +77,82 @@ const Choice = () => {
 
             <Box
                 sx={{
-                    p: { xs: 3, md: 5 },
-                    bgcolor: 'rgba(41, 43, 46, 0.8)',
-                    backdropFilter: 'blur(10px)',
-                    borderRadius: 4,
-                    boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.6)',
+                    p: { xs: 4, md: 5 },
+                    bgcolor: 'rgba(30, 32, 35, 0.98)',
+                    backdropFilter: 'blur(8px)',
+                    borderRadius: 3,
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.7)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     gap: 3,
                     width: '100%',
-                    maxWidth: 450,
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    maxWidth: 400,
+                    border: '1px solid rgba(255, 255, 255, 0.05)',
                 }}
             >
-                <Typography variant="h5" component="h1" sx={{ color: '#e0e0e0', fontWeight: 'bold', letterSpacing: 1, mb: 1 }}>
-                    Please make a selection:
+                <Typography
+                    variant="h5"
+                    component="h1"
+                    sx={{
+                        color: '#e0e0e0',
+                        fontWeight: 600,
+                        letterSpacing: 0.5,
+                        mb: 1,
+                        width: 'auto',
+                        textTransform: 'uppercase',
+                    }}
+                >
+                    Main Menu
                 </Typography>
-                <List sx={{ width: '100%' }}>
+                <List sx={{ width: '100%', p: 0 }}>
                     {menuItemLogic().map((item, index) => (
-                        <ListItem key={index} disablePadding>
+                        <ListItem key={index} disablePadding sx={{ mb: 1.5 }}>
                             <ListItemButton
                                 onClick={() => handleMenu(item.value)}
                                 sx={{
-                                    py: 1.5,
+                                    py: 1.25,
                                     px: 2,
-                                    borderRadius: 2,
-                                    transition: 'background-color 0.3s ease-in-out',
+                                    borderRadius: 1,
+                                    transition: 'all 0.3s',
+                                    bgcolor: 'transparent',
                                     '&:hover': {
-                                        bgcolor: '#424549',
+                                        bgcolor: '#282a2e',
+                                        transform: 'translateY(-1px)',
+                                        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
                                     },
                                 }}
                             >
-                                <ListItemIcon sx={{ color: '#88aaff' }}>
+                                <ListItemIcon
+                                    sx={{
+                                        color: '#1a73e8',
+                                        minWidth: 40
+                                    }}
+                                >
                                     {item.icon}
                                 </ListItemIcon>
-                                <ListItemText primary={item.text} sx={{ color: '#e0e0e0' }} />
+                                <ListItemText
+                                    primary={
+                                        <Typography sx={{
+                                            color: '#e0e0e0',
+                                            fontWeight: 500,
+                                        }}>
+                                            {item.text}
+                                        </Typography>
+                                    }
+                                />
                             </ListItemButton>
                         </ListItem>
                     ))}
                 </List>
+                <Typography
+                    variant="caption"
+                    sx={{
+                        color: '#8e8e8e',
+                        mt: 1
+                    }}
+                >
+                </Typography>
             </Box>
         </Box>
     );

@@ -12,18 +12,12 @@ def insert_pdf():
     file_path: str = data.get("file_path")
     file_name = data.get("file_name")
     user_id = data.get("user_id")
-   # if chroma_service.store_pdf_chroma(file_path, file_name) != 200:
-       # return "File already exists" , 409
-    
-    
-    
-    #this function will take the original file path and replace it with a new file path stored in the directory of the project
-    #this way if I need to delete any files I can do it without worrying about the user changing the location of their file
-    #the hash which tells us which file to delete is dependent on the file path so this could be problematic
+    chroma_service.store_pdf_chroma(file_path, file_name)
+        
+    if pdf_service.store_pdf_database(file_path, file_name, user_id) == 409:
+        return "File already exists for this user" , 409
+
     file_path = pdf_service.local_store_pdf(file_path)
-    
-    
-    pdf_service.store_pdf_database(file_path, file_name, user_id)
     
     
     
@@ -36,7 +30,6 @@ def retrieve_pdfs():
     data = request.get_json()
     user_id = data.get("user_id")
     response = pdf_service.pdf_storage_retrieve_pdfs(user_id)
-    print(response)
     return jsonify(response) , 200
 
 
@@ -46,8 +39,18 @@ def delete_pdf():
     data = request.get_json()
     user_id = data.get('user_id')
     pdf_path = data.get("file_path")
+    
+    
     pdf_service.delete_pdf_from_database(user_id, pdf_path)
     pdf_service.delete_pdf_from_local_storage(pdf_path)
+    
+    hash_value = pdf_service.retrieve_hash_value(pdf_path)
+    
+    chroma_service.delete_from_chroma_db(hash_value)
+    
+    
+    
+    
     return "success", 200
   
   

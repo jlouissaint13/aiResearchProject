@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react';
 import {
     Box, Typography, Button, TextField, Divider, List, ListItem,
     ListItemText, ListItemIcon, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio,
-    Dialog, DialogTitle, DialogContent, DialogActions
+    Dialog, DialogTitle, DialogContent, DialogActions, IconButton
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -20,42 +20,55 @@ const initialTemperature = 0.7;
 const initialTopP = 0.9;
 const initialTopK = 40;
 
-const inputStyle = {
-    '& .MuiFilledInput-root': {
-        borderRadius: 2,
-        bgcolor: '#3e4042',
-        '&:hover': { bgcolor: '#424549' },
-        '&.Mui-focused': { bgcolor: '#3e4042' },
+const textFieldStyle = {
+    '& .MuiOutlinedInput-root': {
+        borderRadius: 1,
+        bgcolor: '#282a2e',
+        '& fieldset': {
+            borderColor: '#3e4042',
+            transition: 'border-color 0.3s',
+        },
+        '&:hover fieldset': {
+            borderColor: '#5e6062',
+        },
+        '&.Mui-focused fieldset': {
+            borderColor: '#1a73e8',
+            borderWidth: '2px',
+        },
     },
     '& .MuiInputBase-input': { color: '#e0e0e0' },
     '& .MuiInputLabel-root': { color: '#8e8e8e' },
     '& .MuiInputLabel-root.Mui-focused': { color: '#1a73e8' },
-    '& .MuiFormHelperText-root.Mui-error': { color: '#ff7961' },
+    '& .MuiFormHelperText-root': {
+        color: '#8e8e8e',
+        '&.Mui-error': {
+            color: '#f44336',
+        },
+    },
 };
 
-const buttonStyle = {
-    p: 1.5,
-    borderRadius: 2,
+const primaryButtonStyle = {
+    p: 1.25,
+    borderRadius: 1,
     bgcolor: '#1a73e8',
     color: '#fff',
-    fontWeight: 'bold',
     textTransform: 'none',
+    fontWeight: 500,
+    transition: 'background-color 0.3s, box-shadow 0.1s',
     '&:hover': {
         bgcolor: '#1565c0',
-        boxShadow: '0px 4px 15px rgba(26, 115, 232, 0.4)',
+        transform: 'translateY(-1px)',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
     },
 };
 
 const deleteButtonStyle = {
-    p: 1.5,
-    borderRadius: 2,
-    bgcolor: '#d32f2f',
-    color: '#fff',
-    fontWeight: 'bold',
-    textTransform: 'none',
+    ...primaryButtonStyle,
+    bgcolor: '#f44336',
     '&:hover': {
-        bgcolor: '#b71c1c',
-        boxShadow: '0px 4px 15px rgba(211, 47, 47, 0.4)',
+        bgcolor: '#d32f2f',
+        transform: 'translateY(-1px)',
+        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
     },
 };
 
@@ -328,21 +341,37 @@ const Settings = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                justifyContent: 'center',
+                justifyContent: 'flex-start',
                 position: 'absolute',
                 inset: 0,
                 background: 'linear-gradient(135deg, #1A2027 0%, #171A21 100%)',
                 color: '#e0e0e0',
                 fontFamily: 'Roboto, sans-serif',
                 p: 3,
+                overflowY: 'auto',
             }}
         >
-            <Box sx={{ position: 'absolute', top: 24, left: 24, zIndex: 10 }}>
+            <Box sx={{
+                position: 'absolute',
+                top: { xs: 16, md: 20 },
+                left: { xs: 16, md: 20 },
+                zIndex: 10,
+            }}>
                 <Button
                     onClick={handleBack}
                     variant="text"
                     startIcon={<ArrowBackIcon />}
-                    sx={{ color: '#e0e0e0', textTransform: 'none', '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.08)' } }}
+                    sx={{
+                        color: '#8e8e8e',
+                        textTransform: 'none',
+                        fontSize: '0.85rem',
+                        p: 0.5,
+                        borderRadius: 1,
+                        '&:hover': {
+                            bgcolor: 'rgba(255, 255, 255, 0.05)',
+                            color: '#e0e0e0',
+                        },
+                    }}
                 >
                     Back
                 </Button>
@@ -350,33 +379,46 @@ const Settings = () => {
 
             <Box
                 sx={{
-                    p: { xs: 3, md: 5 },
-                    bgcolor: 'rgba(41, 43, 46, 0.8)',
-                    backdropFilter: 'blur(10px)',
-                    borderRadius: 4,
-                    boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.6)',
+                    p: { xs: 4, md: 5 },
+                    bgcolor: 'rgba(30, 32, 35, 0.98)',
+                    backdropFilter: 'blur(8px)',
+                    borderRadius: 3,
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.7)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: 4,
+                    gap: 3,
                     width: '100%',
                     maxWidth: 650,
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    maxHeight: '90vh',
-                    overflowY: 'auto',
+                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    mt: { xs: 6, md: 4 },
+                    mb: 4,
                 }}
             >
-                <Typography variant="h5" component="h1" sx={{ color: '#e0e0e0', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <SettingsIcon /> Application Settings
+                <Typography
+                    variant="h5"
+                    component="h1"
+                    sx={{
+                        color: '#e0e0e0',
+                        fontWeight: 600,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1.5,
+                        letterSpacing: 0.5,
+                        textTransform: 'uppercase',
+                    }}
+                >
+                    <SettingsIcon sx={{ color: '#1a73e8', fontSize: '28px' }} />
+                    Application Settings
                 </Typography>
 
-                <Box sx={{ width: '100%' }}>
-                    <Typography variant="h6" sx={{ color: '#88aaff', mb: 2 }}>
+                <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <Typography variant="h6" sx={{ color: '#1a73e8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, mb: -1 }}>
                         Authentication
                     </Typography>
                     <TextField
                         fullWidth
-                        variant="filled"
+                        variant="outlined"
                         label="Username"
                         value={username}
                         onChange={(e) => {
@@ -385,11 +427,11 @@ const Settings = () => {
                         }}
                         error={usernameError}
                         helperText={usernameError ? "Username cannot be empty." : ""}
-                        sx={{ mb: 2, ...inputStyle }}
+                        sx={textFieldStyle}
                     />
                     <TextField
                         fullWidth
-                        variant="filled"
+                        variant="outlined"
                         label="Email Address"
                         type="email"
                         value={email}
@@ -406,21 +448,21 @@ const Settings = () => {
                                 invalidEmail ? "Please enter a valid email" :
                                     ""
                         }
-                        sx={{ mb: 2, ...inputStyle }}
+                        sx={textFieldStyle}
                     />
-                    <TextField fullWidth variant="filled" label="New Password (Leave Blank to Keep Current)" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} sx={{ mb: 3, ...inputStyle }} />
-                    <Button fullWidth variant="contained" onClick={handleSaveGeneral} sx={buttonStyle}>
+                    <TextField fullWidth variant="outlined" label="New Password (Leave Blank to Keep Current)" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} sx={textFieldStyle} />
+                    <Button fullWidth variant="contained" onClick={handleSaveGeneral} sx={primaryButtonStyle}>
                         Save User Settings
                     </Button>
                 </Box>
 
-                <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.1)' }} />
+                <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
 
-                <Box sx={{ width: '100%' }}>
-                    <Typography variant="h6" sx={{ color: '#88aaff', mb: 2 }}>
+                <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <Typography variant="h6" sx={{ color: '#1a73e8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, mb: -1 }}>
                         Advanced Model Parameters
                     </Typography>
-                    <Box sx={{ p: 2, border: '1px solid #3e4042', borderRadius: 2, bgcolor: '#3e4042', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <Box sx={{ p: 3, border: '1px solid #3e4042', borderRadius: 1, bgcolor: '#282a2e', display: 'flex', flexDirection: 'column', gap: 3 }}>
                         <FormControl component="fieldset">
                             <FormLabel component="legend" sx={{ color: '#8e8e8e', mb: 1, '&.Mui-focused': { color: '#8e8e8e' } }}>Default Model</FormLabel>
                             <RadioGroup value={defaultModel} onChange={(e) => setDefaultModel(e.target.value)}>
@@ -432,22 +474,22 @@ const Settings = () => {
                         <Typography variant="body2" sx={{ color: '#8e8e8e', mt: -1 }}>
                             Adjusting these parameters affects the creativity and randomness of the responses.
                         </Typography>
-                        <TextField fullWidth variant="filled" label="Temperature (0.0 - 1.0)" type="number" value={temperature} onChange={(e) => setTemperature(parseFloat(e.target.value))} inputProps={{ min: 0.0, max: 1.0, step: 0.1 }} sx={inputStyle} />
-                        <TextField fullWidth variant="filled" label="Top P (Nucleus Sampling)" type="number" value={topP} onChange={(e) => setTopP(parseFloat(e.target.value))} inputProps={{ min: 0.0, max: 1.0, step: 0.05 }} sx={inputStyle} />
-                        <TextField fullWidth variant="filled" label="Top K (Token Selection)" type="number" value={topK} onChange={(e) => setTopK(parseInt(e.target.value))} inputProps={{ min: 1, step: 1 }} sx={inputStyle} />
-                        <Button fullWidth variant="contained" onClick={handleSaveAdvanced} sx={buttonStyle}>
+                        <TextField fullWidth variant="outlined" label="Temperature (0.0 - 1.0)" type="number" value={temperature} onChange={(e) => setTemperature(parseFloat(e.target.value))} inputProps={{ min: 0.0, max: 1.0, step: 0.1 }} sx={textFieldStyle} />
+                        <TextField fullWidth variant="outlined" label="Top P (Nucleus Sampling)" type="number" value={topP} onChange={(e) => setTopP(parseFloat(e.target.value))} inputProps={{ min: 0.0, max: 1.0, step: 0.05 }} sx={textFieldStyle} />
+                        <TextField fullWidth variant="outlined" label="Top K (Token Selection)" type="number" value={topK} onChange={(e) => setTopK(parseInt(e.target.value))} inputProps={{ min: 1, step: 1 }} sx={textFieldStyle} />
+                        <Button fullWidth variant="contained" onClick={handleSaveAdvanced} sx={primaryButtonStyle}>
                             Save Model Configuration
                         </Button>
                     </Box>
                 </Box>
 
-                <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.1)' }} />
+                <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
 
-                <Box sx={{ width: '100%' }}>
-                    <Typography variant="h6" sx={{ color: '#88aaff', mb: 2 }}>
+                <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <Typography variant="h6" sx={{ color: '#1a73e8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, mb: -1 }}>
                         Model Manager
                     </Typography>
-                    <Box sx={{ p: 2, border: '1px solid #3e4042', borderRadius: 2, bgcolor: '#3e4042' }}>
+                    <Box sx={{ p: 3, border: '1px solid #3e4042', borderRadius: 1, bgcolor: '#282a2e' }}>
                         <Typography variant="body2" sx={{ color: '#8e8e8e', mb: 2 }}>
                             View and remove available models from the application.
                         </Typography>
@@ -456,14 +498,40 @@ const Settings = () => {
                                 models.map((model) => (
                                     <ListItem
                                         key={model.id}
-                                        sx={{ bgcolor: '#424549', borderRadius: 2, mb: 1, '&:hover': { bgcolor: '#4f5257' } }}
+                                        sx={{
+                                            bgcolor: '#282a2e',
+                                            borderRadius: 1,
+                                            mb: 1.5,
+                                            transition: 'background-color 0.3s',
+                                            border: '1px solid #3e4042',
+                                            '&:hover': {
+                                                bgcolor: '#424549',
+                                                borderColor: '#1a73e8'
+                                            }
+                                        }}
                                         secondaryAction={
-                                            <Button onClick={() => handleDeleteModel(model.id)} sx={{ color: '#ff7961' }} startIcon={<DeleteIcon />}>
-                                                Delete
-                                            </Button>
+                                            <IconButton
+                                                onClick={() => handleDeleteModel(model.id)}
+                                                sx={{
+                                                    color: '#f44336',
+                                                    '&:hover': { bgcolor: 'rgba(244, 67, 54, 0.1)', color: '#ff7961' },
+                                                    '&:active': { bgcolor: 'transparent' },
+                                                    outline: 'none',
+                                                    '&:focus, &.Mui-focusVisible': {
+                                                        bgcolor: 'transparent',
+                                                        boxShadow: 'none',
+                                                        outline: 'none'
+                                                    }
+                                                }}
+                                                disableRipple
+                                                disableFocusRipple
+                                                disableTouchRipple
+                                            >
+                                                <DeleteIcon />
+                                            </IconButton>
                                         }
                                     >
-                                        <ListItemIcon sx={{ color: '#e0e0e0', minWidth: '40px' }}><DnsIcon /></ListItemIcon>
+                                        <ListItemIcon sx={{ color: '#1a73e8', minWidth: '40px' }}><DnsIcon /></ListItemIcon>
                                         <ListItemText primary={model.name} primaryTypographyProps={{ color: '#e0e0e0', fontWeight: '500' }} />
                                     </ListItem>
                                 ))
@@ -476,13 +544,13 @@ const Settings = () => {
                     </Box>
                 </Box>
 
-                <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.1)' }} />
+                <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
 
-                <Box sx={{ width: '100%' }}>
-                    <Typography variant="h6" sx={{ color: '#ff7961', mb: 2 }}>
+                <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <Typography variant="h6" sx={{ color: '#f44336', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, mb: -1 }}>
                         Account Deletion
                     </Typography>
-                    <Box sx={{ p: 2, border: '1px solid #3e4042', borderRadius: 2, bgcolor: '#3e4042' }}>
+                    <Box sx={{ p: 3, border: '1px solid #3e4042', borderRadius: 1, bgcolor: '#282a2e' }}>
                         <Typography variant="body2" sx={{ color: '#8e8e8e', mb: 2 }}>
                             Permanently delete your account and all associated data, including chat history and user information. This action is irreversible.
                         </Typography>
@@ -498,10 +566,23 @@ const Settings = () => {
                 </Box>
             </Box>
 
-            <Dialog open={isPasswordDialogOpen} onClose={handleCloseDialog} PaperProps={{ sx: { bgcolor: '#3e4042', color: '#e0e0e0', borderRadius: 2, border: '1px solid rgba(255, 255, 255, 0.1)', p:1 } }}>
-                <DialogTitle sx={{ color: '#e0e0e0', fontWeight: 'bold' }}>Confirm Changes</DialogTitle>
-                <DialogContent>
-                    <Typography sx={{ mb: 2 }}>
+            <Dialog
+                open={isPasswordDialogOpen}
+                onClose={handleCloseDialog}
+                PaperProps={{
+                    sx: {
+                        bgcolor: 'rgba(30, 32, 35, 0.98)',
+                        color: '#e0e0e0',
+                        borderRadius: 3,
+                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                        p: 3,
+                        boxShadow: '0 8px 30px rgba(0,0,0,0.7)',
+                    }
+                }}
+            >
+                <DialogTitle sx={{ color: '#e0e0e0', fontWeight: 600, p: 0, mb: 2 }}>Confirm Changes</DialogTitle>
+                <DialogContent sx={{ p: 0 }}>
+                    <Typography sx={{ mb: 3, color: '#8e8e8e' }}>
                         Please enter your current password to confirm.
                     </Typography>
                     <TextField
@@ -510,21 +591,31 @@ const Settings = () => {
                         label="Current Password"
                         type="password"
                         fullWidth
-                        variant="filled"
+                        variant="outlined"
                         value={passwordConfirm}
                         onChange={(e) => setPasswordConfirm(e.target.value)}
-                        sx={inputStyle}
+                        sx={textFieldStyle}
                         InputLabelProps={{ shrink: true }}
                     />
                 </DialogContent>
-                <DialogActions sx={{ p: 2 }}>
-                    <Button onClick={handleCloseDialog} sx={{ color: '#8e8e8e', textTransform: 'none' }}>
+                <DialogActions sx={{ p: 0, pt: 3, gap: 1 }}>
+                    <Button
+                        onClick={handleCloseDialog}
+                        sx={{
+                            color: '#8e8e8e',
+                            textTransform: 'none',
+                            fontWeight: 500,
+                            borderRadius: 1,
+                            p: '8px 16px',
+                            '&:hover': { bgcolor: '#282a2e' }
+                        }}
+                    >
                         Cancel
                     </Button>
                     <Button
                         onClick={handleConfirmPasswordAndSave}
                         disabled={!passwordConfirm}
-                        sx={{ ...buttonStyle, minWidth: 100 }}
+                        sx={{ ...primaryButtonStyle, p: '8px 16px' }}
                     >
                         Confirm & Save
                     </Button>
@@ -534,11 +625,20 @@ const Settings = () => {
             <Dialog
                 open={isDeleteConfirmOpen}
                 onClose={handleCloseDeleteDialog}
-                PaperProps={{ sx: { bgcolor: '#3e4042', color: '#e0e0e0', borderRadius: 2, border: '1px solid rgba(255, 255, 255, 0.1)', p:1 } }}
+                PaperProps={{
+                    sx: {
+                        bgcolor: 'rgba(30, 32, 35, 0.98)',
+                        color: '#e0e0e0',
+                        borderRadius: 3,
+                        border: '1px solid rgba(255, 255, 255, 0.05)',
+                        p: 3,
+                        boxShadow: '0 8px 30px rgba(0,0,0,0.7)',
+                    }
+                }}
             >
-                <DialogTitle sx={{ color: '#e0e0e0', fontWeight: 'bold' }}>Confirm Deletion</DialogTitle>
-                <DialogContent>
-                    <Typography sx={{ mb: 2 }}>
+                <DialogTitle sx={{ color: '#e0e0e0', fontWeight: 'bold', p: 0, mb: 2 }}>Confirm Deletion</DialogTitle>
+                <DialogContent sx={{ p: 0 }}>
+                    <Typography sx={{ mb: 3, color: '#8e8e8e' }}>
                         Please enter your current password to confirm permanent account deletion.
                     </Typography>
                     <TextField
@@ -547,21 +647,31 @@ const Settings = () => {
                         label="Current Password"
                         type="password"
                         fullWidth
-                        variant="filled"
+                        variant="outlined"
                         value={passwordConfirm}
                         onChange={(e) => setPasswordConfirm(e.target.value)}
-                        sx={inputStyle}
+                        sx={textFieldStyle}
                         InputLabelProps={{ shrink: true }}
                     />
                 </DialogContent>
-                <DialogActions sx={{ p: 2 }}>
-                    <Button onClick={handleCloseDeleteDialog} sx={{ color: '#8e8e8e', textTransform: 'none' }}>
+                <DialogActions sx={{ p: 0, pt: 3, gap: 1 }}>
+                    <Button
+                        onClick={handleCloseDeleteDialog}
+                        sx={{
+                            color: '#8e8e8e',
+                            textTransform: 'none',
+                            fontWeight: 500,
+                            borderRadius: 1,
+                            p: '8px 16px',
+                            '&:hover': { bgcolor: '#282a2e' }
+                        }}
+                    >
                         Cancel
                     </Button>
                     <Button
                         onClick={handleConfirmPasswordAndDelete}
                         disabled={!passwordConfirm}
-                        sx={deleteButtonStyle}
+                        sx={{ ...deleteButtonStyle, p: '8px 16px' }}
                     >
                         Confirm & Delete
                     </Button>

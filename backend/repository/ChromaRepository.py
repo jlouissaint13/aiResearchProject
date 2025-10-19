@@ -45,7 +45,10 @@ class ChromaRepository:
         print("data stored?", self.collection.count())
         return 200
 
-
+    
+    def delete_chunks_by_hash_value(self,hash_value):
+        self.collection.delete(where={"hash_value": hash_value})
+    
 
 
 

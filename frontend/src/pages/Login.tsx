@@ -149,74 +149,111 @@ const Login = () => {
         >
             <Box
                 sx={{
-                    p: { xs: 3, md: 5 },
-                    bgcolor: 'rgba(41, 43, 46, 0.8)',
-                    backdropFilter: 'blur(10px)',
-                    borderRadius: 4,
-                    boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.6)',
+                    p: { xs: 4, md: 5 },
+                    bgcolor: 'rgba(30, 32, 35, 0.98)',
+                    backdropFilter: 'blur(8px)',
+                    borderRadius: 3,
+                    boxShadow: '0 8px 30px rgba(0,0,0,0.7)',
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
-                    gap: 4,
+                    gap: 3,
                     width: '100%',
-                    maxWidth: 450,
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    maxWidth: 400,
+                    border: '1px solid rgba(255, 255, 255, 0.05)',
                 }}
             >
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
-                    <AccountCircleIcon sx={{ fontSize: 80, color: '#e0e0e0' }} />
-                    <Typography variant="h5" component="h1" sx={{ color: '#e0e0e0', fontWeight: 'bold' }}>
+                    <AccountCircleIcon sx={{ fontSize: 60, color: '#1a73e8' }} />
+                    <Typography
+                        variant="h5"
+                        component="h1"
+                        sx={{
+                            color: '#e0e0e0',
+                            fontWeight: 600,
+                            letterSpacing: 0.5,
+                            textTransform: 'uppercase',
+                        }}
+                    >
                         Welcome Back
                     </Typography>
-                    <Typography variant="body2" sx={{ color: '#8e8e8e' }}>
+                    <Typography variant="body2" sx={{ color: '#8e8e8e', mt: -1 }}>
                         Log in to access your account
                     </Typography>
                 </Box>
 
                 <TextField
                     fullWidth
-                    variant="filled"
+                    variant="outlined"
                     label="Email or Username"
                     type="text"
-                    sx={{
-                        '& .MuiOutlinedInput-root': {
-                            borderRadius: 2,
-                            bgcolor: '#3e4042',
-                            '& fieldset': { borderColor: 'transparent' },
-                            '&:hover fieldset': { borderColor: '#5e5e5e' },
-                            '&.Mui-focused fieldset': { borderColor: '#1a73e8' },
-                        },
-                        '& .MuiInputBase-input': { color: '#e0e0e0' },
-                        '& .MuiInputLabel-root': { color: '#8e8e8e' },
-                        '& .MuiInputLabel-root.Mui-focused': { color: '#1a73e8' },
-                    }}
                     onChange={event => setUsername(event.target.value)}
                     onKeyPress={handleKeyPress}
                     error={accountNotExists}
                     helperText={accountNotExists ? "User not found" : ""}
-                />
-
-                <TextField
-                    fullWidth
-                    variant="filled"
-                    label="Password"
-                    type="password"
                     sx={{
                         '& .MuiOutlinedInput-root': {
-                            borderRadius: 2,
-                            bgcolor: '#3e4042',
-                            '& fieldset': { borderColor: 'transparent' },
-                            '&:hover fieldset': { borderColor: '#5e5e5e' },
-                            '&.Mui-focused fieldset': { borderColor: '#1a73e8' },
+                            borderRadius: 1,
+                            bgcolor: '#282a2e',
+                            '& fieldset': {
+                                borderColor: '#3e4042',
+                                transition: 'border-color 0.3s',
+                            },
+                            '&:hover fieldset': {
+                                borderColor: '#5e6062',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#1a73e8',
+                                borderWidth: '2px',
+                            },
                         },
                         '& .MuiInputBase-input': { color: '#e0e0e0' },
                         '& .MuiInputLabel-root': { color: '#8e8e8e' },
                         '& .MuiInputLabel-root.Mui-focused': { color: '#1a73e8' },
+                        '& .MuiFormHelperText-root': {
+                            color: '#8e8e8e',
+                            '&.Mui-error': {
+                                color: '#f44336',
+                            },
+                        },
                     }}
+                />
+
+                <TextField
+                    fullWidth
+                    variant="outlined"
+                    label="Password"
+                    type="password"
                     onChange={event => setPassword(event.target.value)}
                     onKeyPress={handleKeyPress}
                     error={invalidPassword}
                     helperText={invalidPassword ? "Invalid email/username or password" : ""}
+                    sx={{
+                        '& .MuiOutlinedInput-root': {
+                            borderRadius: 1,
+                            bgcolor: '#282a2e',
+                            '& fieldset': {
+                                borderColor: '#3e4042',
+                                transition: 'border-color 0.3s',
+                            },
+                            '&:hover fieldset': {
+                                borderColor: '#5e6062',
+                            },
+                            '&.Mui-focused fieldset': {
+                                borderColor: '#1a73e8',
+                                borderWidth: '2px',
+                            },
+                        },
+                        '& .MuiInputBase-input': { color: '#e0e0e0' },
+                        '& .MuiInputLabel-root': { color: '#8e8e8e' },
+                        '& .MuiInputLabel-root.Mui-focused': { color: '#1a73e8' },
+                        '& .MuiFormHelperText-root': {
+                            color: '#8e8e8e',
+                            '&.Mui-error': {
+                                color: '#f44336',
+                            },
+                        },
+                    }}
                 />
 
                 <Button
@@ -224,12 +261,18 @@ const Login = () => {
                     variant="contained"
                     onClick={loginAccount}
                     sx={{
-                        p: 1.5,
-                        borderRadius: 2,
+                        p: 1.25,
+                        borderRadius: 1,
                         bgcolor: '#1a73e8',
                         color: '#fff',
                         textTransform: 'none',
-                        '&:hover': { bgcolor: '#1565c0' },
+                        fontWeight: 500,
+                        transition: 'background-color 0.3s, box-shadow 0.1s',
+                        '&:hover': {
+                            bgcolor: '#1565c0',
+                            transform: 'translateY(-1px)',
+                            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
+                        },
                     }}
 
                 >
@@ -241,23 +284,29 @@ const Login = () => {
                     variant="contained"
                     onClick={continueAsGuest}
                     sx={{
-                        p: 1.5,
-                        borderRadius: 2,
+                        p: 1.25,
+                        borderRadius: 1,
                         bgcolor: '#1a73e8',
                         color: '#fff',
                         textTransform: 'none',
-                        '&:hover': { bgcolor: '#1565c0' },
+                        fontWeight: 500,
+                        transition: 'background-color 0.3s, box-shadow 0.1s',
+                        '&:hover': {
+                            bgcolor: '#1565c0',
+                            transform: 'translateY(-1px)',
+                            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
+                        },
                     }}
                 >
 
                     Continue as Guest
                 </Button>
 
-                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 1, sm: 2 }, mt: 1, alignItems: 'center' }}>
-                    <Link href="#" variant="body2" sx={{ color: '#8e8e8e', '&:hover': { color: '#e0e0e0' } }}>
+                <Box sx={{ display: 'flex', gap: 2, mt: 1, alignItems: 'center', justifyContent: 'center' }}>
+                    <Link href="#" variant="body2" sx={{ color: '#8e8e8e', '&:hover': { color: '#e0e0e0', textDecoration: 'none' } }}>
                         Forgot password?
                     </Link>
-                    <Link onClick={register} href="#" variant="body2" sx={{ color: '#8e8e8e', '&:hover': { color: '#e0e0e0' } }}>
+                    <Link onClick={register} href="#" variant="body2" sx={{ color: '#8e8e8e', '&:hover': { color: '#e0e0e0', textDecoration: 'none' } }}>
                         Don't have an account? Sign up
                     </Link>
                 </Box>

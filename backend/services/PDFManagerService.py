@@ -14,10 +14,17 @@ class PDFManagerService:
         self.metadata_service = MetadataServie(pdf_path)
         hash_value = self.metadata_service.hash_pdf()
         
+        if self.file_exists(user_id,hash_value):
+            return 409
+        
+        
         pdf_path = str(pdf_path)
         
         self.pdf_manager_repository.insert_pdf(pdf_name,user_id,hash_value,pdf_path)
+        
+        return 200
             
+    
     def local_store_pdf(self,pdf_path):
         base_dir = Path(__file__).resolve().parent.parent.parent
         
@@ -36,6 +43,12 @@ class PDFManagerService:
        return self.pdf_manager_repository.retrieve_all_pdfs_by_user_id(user_id)
     
     
+    def retrieve_hash_value(self,file_path):
+        return self.pdf_manager_repository.retrieve_hash_value_by_file_path(file_path)
+    
+    
+    def file_exists(self,user_id,hash_value):
+        return self.pdf_manager_repository.file_exists(user_id,hash_value)
     
     
     def delete_pdf_from_database(self,user_id,file_path):

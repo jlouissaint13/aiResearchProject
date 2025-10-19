@@ -29,6 +29,17 @@ class PDFManagerRepository:
         con.close()
         return rows
     
+    def retrieve_hash_value_by_file_path(self,file_path):
+        con = sqlite3.connect(self.db_path)
+        cur = con.cursor()
+        
+        
+        cur.execute("SELECT hash_value from PDFMANAGER where file_path= ?",(file_path,))
+        res = cur.fetchone()
+        con.close()
+        return res
+    
+    
     
     def retrieve_all_pdfs_by_user_id(self,user_id):
         con = sqlite3.connect(self.db_path)
@@ -40,7 +51,6 @@ class PDFManagerRepository:
         con.commit()
         con.close()
         transformed_messages = [dict(row) for row in res]
-        print(transformed_messages)
         return transformed_messages
 
     def delete_by_user_id(self, user_id):
@@ -64,4 +74,17 @@ class PDFManagerRepository:
         con.commit()
         con.close()
         
+        
+    def file_exists(self,user_id,hash_value):
+        con = sqlite3.connect(self.db_path)
+        cur = con.cursor()
+        
+        cur.execute("SELECT hash_value FROM PDFMANAGER where user_id = ? and hash_value = ?",(user_id,hash_value,))
+        
+        res = cur.fetchone()
+        
+        if  res is not None: 
+            return True
+        
+        return False
         

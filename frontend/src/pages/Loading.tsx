@@ -9,15 +9,15 @@ const Loading = () => {
 
     const navigate = useNavigate();
     useEffect(()=> {
-     setTimeout(loadLogin,2000)
+        setTimeout(loadLogin,2000)
     },[]);
 
 
 
 //simulated loading for now
-function loadLogin() {
-    navigate("/Login")
-}
+    function loadLogin() {
+        navigate("/Login")
+    }
 
     return (
         <Box

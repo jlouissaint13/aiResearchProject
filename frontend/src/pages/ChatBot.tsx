@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Box, Button, Typography, TextField, IconButton, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import { Box, Button, Typography, TextField, IconButton, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Divider } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -9,6 +9,9 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import CreateIcon from '@mui/icons-material/Create';
+import SearchIcon from '@mui/icons-material/Search';
+import AssistantIcon from '@mui/icons-material/Assistant';
+
 const LOADING_MESSAGES = [
     "Consulting the data...",
     "Synthesizing your request...",
@@ -20,7 +23,7 @@ const LOADING_MESSAGES = [
 const AVAILABLE_MODELS = [
     { name: "Gemini 2.5 Flash", id: "gemini-2.5" },
     {name: "LLAMA3.2B", id: "llama3.2b"}
-   
+
 ];
 
 
@@ -37,6 +40,8 @@ const ChatBot = () => {
     const navigate = useNavigate();
     const [selectedModel, setSelectedModel] = useState(AVAILABLE_MODELS[0].id);
     const [isLoggedIn,setIsLoggedIn] = useState<boolean>()
+    const [searchTerm, setSearchTerm] = useState('');
+
     interface RecentChat {
         title: string;
         conversationID: string;
@@ -55,14 +60,14 @@ const ChatBot = () => {
     function loginStatus() : void {
         if (localStorage.getItem("loggedIn") === "true") {
             setIsLoggedIn(true);
-            return 
+            return
         }
-        
+
         setIsLoggedIn(false)
-        
+
     }
-    
-    
+
+
 
 // @ts-ignore
     function sortChats(chats) {
@@ -226,12 +231,7 @@ const ChatBot = () => {
     const handleRightClick = (e: React.MouseEvent, conversationID: string) => {
         if (isLoading) return;
         e.preventDefault();
-
-        const shouldDelete = true;
-
-        if (shouldDelete) {
-            handleDeleteChat(conversationID);
-        }
+        handleDeleteChat(conversationID);
     }
 
     async function createChat(title : string) {
@@ -285,23 +285,10 @@ const ChatBot = () => {
     const handleCopy = async (text: string) => {
         try {
             await navigator.clipboard.writeText(text);
-            console.log("Message copied to clipboard!");
+            alert("Copied to clipboard!");
         } catch (err) {
-            const textArea = document.createElement("textarea");
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-9999px';
-            textArea.style.top = '-9999px';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            try {
-                document.execCommand('copy');
-                console.log("Message copied via fallback!");
-            } catch (fallbackErr) {
-                console.error('Fallback copy failed: ', fallbackErr);
-            }
-            document.body.removeChild(textArea);
+            console.error('Failed to copy text: ', err);
+            alert("Failed to copy text.");
         }
     };
 
@@ -322,10 +309,6 @@ const ChatBot = () => {
             user_id: localStorage.getItem("userID"),
             conversation_id : sessionStorage.getItem("conversationID"),
             logged_in : localStorage.getItem("logged_in")
-            /* The reason that I want to check for this is because we should skip database calls
-          no reason to store messages if the user is not logged in
-           */
-            
         };
 
 // @ts-ignore
@@ -382,13 +365,18 @@ const ChatBot = () => {
         sessionStorage.setItem("lastPage", "chatbot");
         navigate("/Settings");
     };
+
+    const filteredRecentChats = recentChats.filter(chat =>
+        chat.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <Box
             sx={{
                 display: 'flex',
-                flexDirection: 'column',
                 height: '100vh',
                 width: '100vw',
+                overflow: 'hidden',
                 background: 'linear-gradient(135deg, #1A2027 0%, #171A21 100%)',
                 color: '#e0e0e0',
                 fontFamily: 'Roboto, sans-serif',
@@ -400,7 +388,7 @@ const ChatBot = () => {
                     position: 'fixed',
                     inset: 0,
                     bgcolor: 'rgba(0, 0, 0, 0.5)',
-                    zIndex: 99,
+                    zIndex: 1100,
                     opacity: isSidebarOpen ? 1 : 0,
                     visibility: isSidebarOpen ? 'visible' : 'hidden',
                     transition: 'opacity 0.3s ease-in-out',
@@ -413,328 +401,284 @@ const ChatBot = () => {
                     top: 0,
                     left: 0,
                     height: '100vh',
-                    width: { xs: '70%', sm: 300 },
-                    bgcolor: 'rgba(41, 43, 46, 0.95)',
+                    width: { xs: '75%', sm: 320 },
+                    bgcolor: 'rgba(30, 32, 35, 0.98)',
+                    backdropFilter: 'blur(8px)',
                     transform: isSidebarOpen ? 'translateX(0)' : 'translateX(-100%)',
                     transition: 'transform 0.4s cubic-bezier(0.4, 0.0, 0.2, 1)',
-                    zIndex: 100,
-                    boxShadow: '4px 0 10px rgba(0, 0, 0, 0.5)',
+                    zIndex: 1200,
+                    boxShadow: '4px 0 15px rgba(0, 0, 0, 0.5)',
+                    borderRight: '1px solid rgba(255, 255, 255, 0.05)',
                     p: 2,
                     display: 'flex',
                     flexDirection: 'column',
                 }}
             >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#fff' }}>
-                        Conversations
-                    </Typography>
-                    <IconButton
-                        onClick={handleDrawerToggle}
-                        disableFocusRipple
-                        sx={{
-                            color: '#8e8e8e',
-                            '&:hover': {
+                <Box sx={{ flexShrink: 0, display: 'flex', flexDirection: 'column', gap: 2, mb: 2 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="h6" sx={{ fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, color: '#e0e0e0' }}>
+                            Conversations
+                        </Typography>
+                        <IconButton
+                            onClick={handleDrawerToggle}
+                            sx={{
+                                color: '#8e8e8e',
+                                '&:hover': { color: '#e0e0e0', bgcolor: 'transparent' },
+                                '&:active': { bgcolor: 'transparent' },
+                                outline: 'none',
+                                '&:focus, &.Mui-focusVisible': { bgcolor: 'transparent', boxShadow: 'none', outline: 'none' }
+                            }}
+                            disableRipple
+                            disableFocusRipple
+                            disableTouchRipple
+                        >
+                            <CloseIcon />
+                        </IconButton>
+                    </Box>
+
+                    <FormControl fullWidth variant="outlined">
+                        <InputLabel id="model-select-label" sx={{ color: '#8e8e8e', '&.Mui-focused': { color: '#1a73e8' } }}>Select Model</InputLabel>
+                        <Select
+                            labelId="model-select-label"
+                            value={selectedModel}
+                            onChange={handleModelChange}
+                            label="Select Model"
+                            disabled={isLoading}
+                            sx={{
                                 color: '#e0e0e0',
-                            },
-                            '&:focus': { outline: 'none' },
-                            '&.Mui-focusVisible': { outline: 'none' }
+                                borderRadius: 1,
+                                bgcolor: '#282a2e',
+                                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#3e4042' },
+                                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#5e6062' },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a73e8', borderWidth: '2px' },
+                                '.MuiSvgIcon-root': { color: '#8e8e8e' }
+                            }}
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        bgcolor: '#282a2e',
+                                        borderRadius: 1,
+                                        border: '1px solid #3e4042',
+                                        color: '#e0e0e0',
+                                    },
+                                },
+                            }}
+                        >
+                            {AVAILABLE_MODELS.map((model) => (
+                                <MenuItem
+                                    key={model.id}
+                                    value={model.id}
+                                    sx={{
+                                        color: '#e0e0e0',
+                                        '&:hover': { bgcolor: '#424549' },
+                                        '&.Mui-selected': { bgcolor: '#1a73e8', color: '#fff', '&:hover': { bgcolor: '#1565c0' } }
+                                    }}
+                                >
+                                    {model.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <TextField
+                        fullWidth
+                        variant="outlined"
+                        label="Search conversations..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        disabled={isLoading}
+                        InputProps={{
+                            startAdornment: (
+                                <SearchIcon sx={{ color: '#8e8e8e', mr: 1 }} />
+                            ),
                         }}
-                    >
-                        <CloseIcon />
-                    </IconButton>
+                        sx={{
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: 1,
+                                bgcolor: '#282a2e',
+                                '& fieldset': { borderColor: '#3e4042' },
+                                '&:hover fieldset': { borderColor: '#5e6062' },
+                                '&.Mui-focused fieldset': { borderColor: '#1a73e8', borderWidth: '2px' },
+                            },
+                            '& .MuiInputBase-input': { color: '#e0e0e0' },
+                            '& .MuiInputLabel-root': { color: '#8e8e8e' },
+                            '& .MuiInputLabel-root.Mui-focused': { color: '#1a73e8' },
+                        }}
+                    />
                 </Box>
 
-                <FormControl fullWidth variant="filled" sx={{ mb: 1, mt: 2, '.MuiInputLabel-root': { color: '#e0e0e0' }, '.MuiOutlinedInput-notchedOutline': { borderColor: '#5e5e5e' }, '.MuiSelect-select': { color: '#e0e0e0', bgcolor: 'transparent', borderRadius: '8px' } }}>
-                    <InputLabel id="model-select-label" sx={{ color: '#fff !important' }}>Select Model</InputLabel>
-                    <Select
-                        labelId="model-select-label"
-                        value={selectedModel}
-                        onChange={handleModelChange}
-                        label="Select Model"
-                        disabled={isLoading}
-                        sx={{
-                            color: '#e0e0e0',
-                            bgcolor: '#3e4042',
-                            '.MuiOutlinedInput-notchedOutline': { borderColor: '#5e5e5e' },
-                            '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#e0e0e0 !important' },
-                            '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a73e8 !important' },
-                            '.MuiSvgIcon-root': { color: '#e0e0e0' }
-                        }}
-                        MenuProps={{
-                            PaperProps: {
-                                sx: {
-                                    bgcolor: '#3e4042', 
-                                    borderRadius: 2,
-                                    mt: 0.5,
-                                    border: '1px solid #5e5e5e',
-                                    color: '#e0e0e0', 
+                <Box sx={{ flexGrow: 1, overflowY: 'auto', pr: 1, mr: -1, minHeight: 0 }}>
+                    {filteredRecentChats.map((chat) => (
+                        <Button
+                            key={chat.conversationID}
+                            fullWidth
+                            onClick={() => { if (!isLoading) handleChatClick(chat.conversationID); }}
+                            onContextMenu={(e) => handleRightClick(e, chat.conversationID)}
+                            disableRipple
+                            disableFocusRipple
+                            disableTouchRipple
+                            sx={{
+                                justifyContent: 'flex-start',
+                                p: 1.5,
+                                my: 0.5,
+                                borderRadius: 1,
+                                bgcolor: 'transparent',
+                                opacity: isLoading ? 0.6 : 1,
+                                transition: 'background-color 0.3s, box-shadow 0.1s, transform 0.1s',
+                                textTransform: 'none',
+                                outline: 'none',
+                                '&:focus, &.Mui-focusVisible': { bgcolor: 'transparent', boxShadow: 'none', outline: 'none' },
+                                '&:hover': {
+                                    bgcolor: isLoading ? 'transparent' : '#282a2e',
+                                    cursor: isLoading ? 'default' : 'pointer',
+                                    transform: isLoading ? 'none' : 'translateY(-1px)',
+                                    boxShadow: isLoading ? 'none' : '0 2px 5px rgba(0, 0, 0, 0.3)',
                                 },
-                            },
-                        }}
-                    >
-                        {AVAILABLE_MODELS.map((model) => (
-                           
-                            <MenuItem 
-                                key={model.id} 
-                                value={model.id}
+                            }}
+                        >
+                            <Typography noWrap variant="body1" sx={{ color: '#e0e0e0', fontWeight: 500 }}>
+                                {chat.title}
+                            </Typography>
+                        </Button>
+                    ))}
+                    {filteredRecentChats.length === 0 && (
+                        <Typography sx={{ color: '#8e8e8e', textAlign: 'center', mt: 3, fontStyle: 'italic' }}>
+                            No conversations found.
+                        </Typography>
+                    )}
+                </Box>
+
+                {/* Fixed Bottom Section */}
+                <Box sx={{ flexShrink: 0, pt: 1, mt: 1, pb: 2 }}>
+                    <Divider sx={{ mb: 1, bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        {[
+                            { text: 'New Conversation', icon: <CreateIcon />, handler: handleNewChat, visible: true },
+                            { text: 'Settings', icon: <SettingsIcon />, handler: handleSettingsClick, visible: isLoggedIn },
+                            { text: 'Exit', icon: <ExitToAppIcon />, handler: handleGoBack, visible: true }
+                        ].map((item) => item.visible && (
+                            <Button
+                                key={item.text}
+                                onClick={item.handler}
+                                disabled={isLoading}
+                                variant="text"
+                                startIcon={item.icon}
+                                disableRipple
+                                disableFocusRipple
+                                disableTouchRipple
                                 sx={{
                                     color: '#e0e0e0',
+                                    justifyContent: 'flex-start',
+                                    textTransform: 'none',
+                                    py: 1.25,
+                                    px: 1.5,
+                                    borderRadius: 1,
+                                    fontWeight: 500,
+                                    bgcolor: 'transparent',
+                                    '& .MuiSvgIcon-root': { color: '#1a73e8' },
+                                    transition: 'background-color 0.3s, box-shadow 0.1s, transform 0.1s',
+                                    outline: 'none',
+                                    '&:focus, &.Mui-focusVisible': { bgcolor: 'transparent', boxShadow: 'none', outline: 'none' },
                                     '&:hover': {
-                                        bgcolor: '#5e5e5e',
+                                        bgcolor: '#282a2e',
+                                        transform: 'translateY(-1px)',
+                                        boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
                                     },
-                                    '&.Mui-selected': {
-                                        bgcolor: '#1a73e8',
-                                        color: '#fff',
-                                        '&:hover': {
-                                            bgcolor: '#1565c0',
-                                        }
-                                    }
+                                    '&:active': { bgcolor: 'transparent' }
                                 }}
                             >
-                                {model.name}
-                            </MenuItem>
+                                {item.text}
+                            </Button>
                         ))}
-                    </Select>
-                </FormControl>
-
-               
-                <Box
-                    sx={{
-                        flexGrow: 1,
-                        overflowY: 'auto',
-                        '::-webkit-scrollbar': {
-                            display: 'none',
-                        },
-                        msOverflowStyle: 'none',
-                        scrollbarWidth: 'none',
-                    }}
-                >
-                    {recentChats.map(function(chat) {
-                        return (
-                            <Box
-                                key={chat.conversationID}
-                                onClick={function() {
-                                    if (!isLoading) handleChatClick(chat.conversationID);
-                                }}
-                                onContextMenu={function(e) {
-                                    handleRightClick(e, chat.conversationID);
-                                }}
-                                sx={{
-                                    p: 1.5,
-                                    my: 1,
-                                    bgcolor: '#3e4042',
-                                    borderRadius: 2,
-                                    opacity: isLoading ? 0.5 : 1,
-                                    '&:hover': {
-                                        bgcolor: isLoading ? '#3e4042' : '#5e5e5e',
-                                        cursor: isLoading ? 'default' : 'pointer',
-                                    },
-                                }}
-                            >
-                                <Typography variant="body1">
-                                    {chat.title}
-                                </Typography>
-                            </Box>
-                        );
-                    })}
-                </Box>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1, marginTop: 'auto', marginBottom: 2 }}>
-                    <Button
-                        onClick={handleNewChat}
-                        disabled={isLoading}
-                        variant="text"
-                        startIcon={<CreateIcon />}
-                        sx={{
-                            color: '#e0e0e0',
-                            justifyContent: 'flex-start',
-                            textTransform: 'none',
-                            py: 1.5,
-                            '&:hover': {
-                                bgcolor: '#3e4042',
-                            },
-                            '&:focus': { outline: 'none' },
-                            '&.Mui-focusVisible': { backgroundColor: 'transparent' },
-                        }}
-                    >
-                        New Conversation
-                    </Button>
-                    <Button
-                        onClick={handleSettingsClick}
-                        disabled={isLoading}
-                        
-                        variant="text"
-                        startIcon={<SettingsIcon />}
-                        sx={{
-                            display: isLoggedIn ? 'inline-flex' : 'none' ,
-                            color: '#e0e0e0',
-                            justifyContent: 'flex-start',
-                            textTransform: 'none',
-                            py: 1.5,
-                            '&:hover': {
-                                bgcolor: '#3e4042',
-                            },
-                            '&:focus': { outline: 'none' },
-                            '&.Mui-focusVisible': { backgroundColor: 'transparent' },
-                        }}
-                    >
-                        Settings
-                    </Button>
-                    <Button
-                        onClick={handleGoBack}
-                        disabled={isLoading}
-                        variant="text"
-                        startIcon={<ExitToAppIcon />}
-                        sx={{
-                            color: '#e0e0e0',
-                            justifyContent: 'flex-start',
-                            textTransform: 'none',
-                            py: 1.5,
-                            '&:hover': {
-                                bgcolor: '#3e4042',
-                            },
-                            '&:focus': { outline: 'none' },
-                            '&.Mui-focusVisible': { backgroundColor: 'transparent' },
-                        }}
-                    >
-                        Exit
-                    </Button>
+                    </Box>
                 </Box>
             </Box>
 
-            <Box
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    flexGrow: 1,
-                }}
-            >
+            <Box sx={{ display: 'flex', flexDirection: 'column', flexGrow: 1, height: '100vh', transition: 'margin-left 0.4s cubic-bezier(0.4, 0.0, 0.2, 1)' }}>
                 <Box
                     sx={{
                         display: 'flex',
-                        justifyContent: 'space-between',
                         alignItems: 'center',
                         p: 2,
-                        bgcolor: 'rgba(41, 43, 46, 0.8)',
-                        backdropFilter: 'blur(10px)',
+                        bgcolor: 'rgba(30, 32, 35, 0.98)',
                         borderBottom: '1px solid #3e4042',
-                        boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.5)',
-                        position: 'sticky',
-                        top: 0,
-                        zIndex: 10,
+                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.3)',
+                        flexShrink: 0,
                     }}
                 >
                     <IconButton
                         onClick={handleDrawerToggle}
                         disabled={isLoading}
-                        disableFocusRipple
                         sx={{
                             color: '#8e8e8e',
-                            '&:hover': {
-                                color: isLoading ? '#8e8e8e' : '#e0e0e0',
-                            },
-                            '&:focus': { outline: 'none' },
-                            '&.Mui-focusVisible': { outline: 'none' },
-                            opacity: isLoading ? 0.5 : 1,
-                            cursor: isLoading ? 'default' : 'pointer',
+                            '&:hover': { color: '#e0e0e0', bgcolor: 'transparent' },
+                            '&:active': { bgcolor: 'transparent' },
+                            outline: 'none',
+                            '&:focus, &.Mui-focusVisible': {
+                                bgcolor: 'transparent',
+                                boxShadow: 'none',
+                                outline: 'none'
+                            }
                         }}
+                        disableRipple
+                        disableFocusRipple
+                        disableTouchRipple
                     >
                         <MenuIcon />
                     </IconButton>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'absolute',
-                            left: '50%',
-                            transform: 'translateX(-50%)',
-                        }}
-                    >
-                        <Typography variant="h6" sx={{ color: '#e0e0e0', fontWeight: 'bold' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+                        <Typography variant="h6" sx={{ color: '#e0e0e0', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                             Athena
                         </Typography>
-                        <Box
-                            sx={{
-                                width: 16,
-                                height: 16,
-                                borderRadius: '50%',
-                                bgcolor: '#1a73e8',
-                                ml: 1,
-                            }}
-                        />
+                        <AssistantIcon sx={{ color: '#1a73e8', ml: 1.5 }} />
                     </Box>
                 </Box>
 
-                <Box
-                    sx={{
-                        flexGrow: 1,
-                        overflowY: 'auto',
-                        p: 3,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 2,
-                        scrollBehavior: 'smooth',
-                        '::-webkit-scrollbar': {
-                            display: 'none',
-                        },
-                        msOverflowStyle: 'none',
-                        scrollbarWidth: 'none',
-                    }}
-                >
+                <Box sx={{ flexGrow: 1, overflowY: 'auto', p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
                     {messages.length === 0 ? (
                         <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <Typography variant="h4" sx={{ color: '#5e5e5e' }}>
-                                How can I help you today {localStorage.getItem("firstName")}?
+                            <Typography variant="h5" sx={{ color: '#8e8e8e' }}>
+                                How can I help you today{localStorage.getItem("firstName") ? `, ${localStorage.getItem("firstName")}` : ''}?
                             </Typography>
                         </Box>
                     ) : (
                         messages.map((msg, index) => (
-                            <Box
-                                key={msg.id}
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start',
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        maxWidth: '70%',
-                                    }}
-                                >
+                            <Box key={msg.id} sx={{ display: 'flex', justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
+                                {/* Flex container for bubble + potential icon below */}
+                                <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: '80%', alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
+                                    {/* Message Bubble */}
                                     <Box
                                         sx={{
-                                            p: 2,
-                                            borderRadius: msg.sender === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                                            bgcolor: msg.sender === 'user' ? '#1a73e8' : '#3e4042',
-                                            color: '#e0e0e0',
-                                            boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.3)',
+                                            p: 1.5,
+                                            borderRadius: msg.sender === 'user' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
+                                            bgcolor: msg.sender === 'user' ? '#1a73e8' : '#282a2e',
+                                            color: msg.sender === 'user' ? '#fff' : '#e0e0e0',
+                                            boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.2)',
+                                            // Removed position: 'relative' and hover styles
                                         }}
                                     >
-                                        <Typography variant="body1">{msg.content}</Typography>
+                                        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', fontWeight: 500 }}>{msg.content}</Typography>
                                     </Box>
 
-                                    
-                                    {index >= messages.length - 1 && (
+                                    {/* Conditionally render Copy Icon *BELOW* the bubble for the last message */}
+                                    {index === messages.length - 1 && (
                                         <IconButton
                                             size="small"
                                             onClick={() => handleCopy(msg.content)}
+                                            disableRipple
+                                            disableFocusRipple
+                                            disableTouchRipple
                                             sx={{
-                                                alignSelf: 'flex-end',
-                                                mt: 0.5,
+                                                mt: 0.5, 
+                                                alignSelf: 'flex-end', 
                                                 color: '#8e8e8e',
-                                                p: 0.5,
-                                                '&:hover': { color: '#e0e0e0' },
+                                                '&:hover': { color: '#e0e0e0', bgcolor: 'transparent' },
+                                                '&:active': { bgcolor: 'transparent' },
+                                                outline: 'none',
+                                                '&:focus, &.Mui-focusVisible': { bgcolor: 'transparent', boxShadow: 'none', outline: 'none' }
                                             }}
                                         >
-                                            <ContentCopyIcon fontSize="small" />
+                                            <ContentCopyIcon fontSize="inherit" />
                                         </IconButton>
                                     )}
                                 </Box>
@@ -742,33 +686,9 @@ const ChatBot = () => {
                         ))
                     )}
                     {isLoading && (
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'flex-start',
-                                p: 2,
-                                alignItems: 'center',
-                                gap: 2,
-                            }}
-                        >
-                            <Box
-                                sx={{
-                                    width: '20px',
-                                    height: '20px',
-                                    border: '3px solid #5e5e5e',
-                                    borderTop: '3px solid #1a73e8',
-                                    borderRadius: '50%',
-                                    animation: 'spin 1s linear infinite',
-                                    '@keyframes spin': {
-                                        '0%': { transform: 'rotate(0deg)' },
-                                        '100%': { transform: 'rotate(360deg)' },
-                                    },
-                                }}
-                            />
-                            <Typography
-                                variant="body1"
-                                sx={{ color: '#8e8e8e', fontStyle: 'italic' }}
-                            >
+                        <Box sx={{ display: 'flex', justifyContent: 'flex-start', p: 2, alignItems: 'center', gap: 2 }}>
+                            <Box sx={{ width: '20px', height: '20px', border: '3px solid #3e4042', borderTop: '3px solid #1a73e8', borderRadius: '50%', animation: 'spin 1s linear infinite', '@keyframes spin': { '0%': { transform: 'rotate(0deg)' }, '100%': { transform: 'rotate(360deg)' } } }} />
+                            <Typography variant="body1" sx={{ color: '#8e8e8e', fontStyle: 'italic' }}>
                                 {currentLoadingMessage}
                             </Typography>
                         </Box>
@@ -776,73 +696,52 @@ const ChatBot = () => {
                     <div ref={messagesEndRef} />
                 </Box>
 
-                <Box
-                    sx={{
-                        p: 2,
-                        bgcolor: 'rgba(41, 43, 46, 0.8)',
-                        backdropFilter: 'blur(10px)',
-                        borderTop: '1px solid #3e4042',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 2,
-                        boxShadow: '0px -2px 10px rgba(0, 0, 0, 0.5)',
-                    }}
-                >
+                <Box sx={{ p: 2, bgcolor: 'rgba(30, 32, 35, 0.98)', borderTop: '1px solid #3e4042', display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0, boxShadow: '0 -2px 10px rgba(0, 0, 0, 0.3)' }}>
                     <TextField
                         fullWidth
                         multiline
-                        maxRows={4}
+                        maxRows={5}
                         variant="outlined"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && !e.shiftKey) {
-                                e.preventDefault();
-                                sendMessage();
-                            }
-                        }}
+                        onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }}
                         placeholder="Enter your question here"
                         disabled={isLoading}
                         sx={{
                             '& .MuiOutlinedInput-root': {
                                 borderRadius: 4,
-                                bgcolor: '#3e4042',
-                                '& fieldset': {
-                                    borderColor: 'transparent',
-                                },
-                                '&:hover fieldset': {
-                                    borderColor: '#5e5e5e',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: '#1a73e8',
-                                },
-                                '&.Mui-disabled': {
-                                    bgcolor: '#2e2e2e',
-                                    opacity: 0.6,
-                                },
+                                bgcolor: '#282a2e',
+                                '& fieldset': { borderColor: '#3e4042' },
+                                '&:hover fieldset': { borderColor: '#5e6062' },
+                                '&.Mui-focused fieldset': { borderColor: '#1a73e8', borderWidth: '2px' },
                             },
-                            '& .MuiInputBase-input': {
-                                color: '#e0e0e0',
-                            },
+                            '& .MuiInputBase-input': { color: '#e0e0e0', '::-webkit-scrollbar': { display: 'none' }, msOverflowStyle: 'none', scrollbarWidth: 'none' },
                         }}
                     />
                     <IconButton
                         color="primary"
                         onClick={sendMessage}
                         disabled={!input.trim() || isLoading}
+                        disableRipple
+                        disableFocusRipple
+                        disableTouchRipple
                         sx={{
                             p: 1.5,
                             bgcolor: '#1a73e8',
+                            color: '#fff',
+                            transition: 'background-color 0.3s, box-shadow 0.1s, transform 0.1s',
+                            outline: 'none',
+                            '&:focus, &.Mui-focusVisible': { bgcolor: '#1a73e8', boxShadow: 'none', outline: 'none' },
                             '&:hover': {
                                 bgcolor: '#1565c0',
+                                transform: 'translateY(-1px)',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
                             },
-                            '&.Mui-disabled': {
-                                bgcolor: '#5e5e5e',
-                                color: '#a0a0a0',
-                            },
+                            '&.Mui-disabled': { bgcolor: '#282a2e', color: '#8e8e8e' },
+                            '&:active': { bgcolor: '#1a73e8' }
                         }}
                     >
-                        <SendIcon sx={{ color: '#fff' }} />
+                        <SendIcon />
                     </IconButton>
                 </Box>
             </Box>
