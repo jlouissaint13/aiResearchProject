@@ -27,6 +27,7 @@ const Choice = () => {
         {text: "Exit", icon: <ExitToAppIcon />, value: "logout" }
     ]
 
+    // @ts-ignore
     function handleMenu(value) {
         switch (value) {
             case "chat": navigate("/ChatBot"); break;
