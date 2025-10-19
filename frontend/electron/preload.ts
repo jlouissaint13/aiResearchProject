@@ -22,6 +22,14 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
 interface ElectronFile extends File {
     path: string;
 }
+declare global {
+    interface Window {
+        ipcRenderer: typeof ipcRenderer;
+        fileAPI: {
+            getFilePath: (file: File) => string;
+        };
+    }
+}
 // Expose file API to get file paths
 contextBridge.exposeInMainWorld('fileAPI', {
     getFilePath: (file: File) => {

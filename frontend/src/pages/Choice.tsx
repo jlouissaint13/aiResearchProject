@@ -27,7 +27,7 @@ const Choice = () => {
         {text: "Exit", icon: <ExitToAppIcon />, value: "logout" }
     ]
 
-    function handleMenu(value) {
+    function handleMenu(value : string) {
         switch (value) {
             case "chat": navigate("/ChatBot"); break;
             case "insertPDF": navigate("/uploadPDF"); break;
