@@ -548,8 +548,7 @@ const ChatBot = () => {
                     )}
                 </Box>
 
-                {/* Fixed Bottom Section */}
-                <Box sx={{ flexShrink: 0, pt: 1, mt: 1, pb: 2 }}>
+                <Box sx={{ flexShrink: 0, pt: 1, mt: 1, pb: 2.9 }}>
                     <Divider sx={{ mb: 1, bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                         {[
