@@ -27,25 +27,27 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, 
 let win: BrowserWindow | null
 
 function createWindow() {
-  win = new BrowserWindow({
-    icon: path.join(process.env.VITE_PUBLIC, 'electron-vite.svg'),
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.mjs'),
-    },
-  })
+    win = new BrowserWindow({
+        title: "Marie", // sets the window title
+        icon: path.join(process.env.VITE_PUBLIC, 'marie-icon.png'), // new app icon
+        webPreferences: {
+            preload: path.join(__dirname, 'preload.mjs'),
+        },
+    })
 
-  // Test active push message to Renderer-process.
-  win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', (new Date).toLocaleString())
-  })
+    // Optional: Update title again after load just to be safe
+    win.webContents.on('did-finish-load', () => {
+        win?.setTitle("Marie")
+        win?.webContents.send('main-process-message', (new Date).toLocaleString())
+    })
 
-  if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL)
-  } else {
-    // win.loadFile('dist/index.html')
-    win.loadFile(path.join(RENDERER_DIST, 'index.html'))
-  }
+    if (VITE_DEV_SERVER_URL) {
+        win.loadURL(VITE_DEV_SERVER_URL)
+    } else {
+        win.loadFile(path.join(RENDERER_DIST, 'index.html'))
+    }
 }
+
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

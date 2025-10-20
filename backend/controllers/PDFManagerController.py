@@ -13,11 +13,13 @@ def insert_pdf():
     file_name = data.get("file_name")
     user_id = data.get("user_id")
     chroma_service.store_pdf_chroma(file_path, file_name)
-        
+
+    file_path = pdf_service.local_store_pdf(file_path)    
+           
     if pdf_service.store_pdf_database(file_path, file_name, user_id) == 409:
         return "File already exists for this user" , 409
 
-    file_path = pdf_service.local_store_pdf(file_path)
+    
     
     
     

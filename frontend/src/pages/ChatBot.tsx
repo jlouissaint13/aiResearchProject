@@ -627,7 +627,7 @@ const ChatBot = () => {
                     </IconButton>
                     <Box sx={{ display: 'flex', alignItems: 'center', position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
                         <Typography variant="h6" sx={{ color: '#e0e0e0', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                            Athena
+                            Marie
                         </Typography>
                         <AssistantIcon sx={{ color: '#1a73e8', ml: 1.5 }} />
                     </Box>

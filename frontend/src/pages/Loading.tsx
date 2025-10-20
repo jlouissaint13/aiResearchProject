@@ -36,7 +36,7 @@ const Loading = () => {
         >
             <CircularProgress sx={{ color: '#1a73e8' }} size={60} />
             <Typography variant="h6" component="p" sx={{ color: '#e0e0e0' }}>
-                Initializing Athena...
+                Initializing Marie...
             </Typography>
         </Box>
     );
