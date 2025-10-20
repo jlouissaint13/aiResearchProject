@@ -23,7 +23,6 @@ const Choice = () => {
 
     const guestMenuItems = [
         {text: "Chat", icon: <LiveHelpIcon />, value: "chat" },
-        {text: "Quick Search", icon: <SearchIcon /> , value: "quickSearch" },
         {text: "Exit", icon: <ExitToAppIcon />, value: "logout" }
     ]
 

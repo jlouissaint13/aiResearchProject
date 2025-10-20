@@ -4,7 +4,7 @@ from sentence_transformers import SentenceTransformer
 from configuration.RagConfiguration import RagConfiguration
 
 class EmbedHandler:
-    embed_model = SentenceTransformer(RagConfiguration.EMBEDDING_MODEL[0])
+    embed_model = SentenceTransformer('all-mpnet-base-v2')
 
     def embed(self, chunks):
         embedded = self.embed_model.encode(chunks,

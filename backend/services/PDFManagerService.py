@@ -51,6 +51,13 @@ class PDFManagerService:
         return self.pdf_manager_repository.file_exists(user_id,hash_value)
     
     
+    def get_ref_count(self,hash_value):
+        return self.pdf_manager_repository.get_ref_count(hash_value)
+    
+    def get_searchable_documents(self,user_id):
+        return self.pdf_manager_repository.get_searchable_documents(user_id)
+        
+    
     def delete_pdf_from_database(self,user_id,file_path):
         self.metadata_service = MetadataServie(file_path)
         hash_value = self.metadata_service.hash_pdf()
@@ -58,8 +65,10 @@ class PDFManagerService:
         return 200
          
         
-    def delete_pdf_from_local_storage(self,file_path):
+    def delete_pdf_from_local_storage(self,file_path,hash_value):
         file = Path(file_path)
-        if file.exists():
-            file.unlink()
+        #users will need the the file still if ref count is not zero
+        if self.get_ref_count(hash_value) == 0:
+            if file.exists():
+                file.unlink()
         

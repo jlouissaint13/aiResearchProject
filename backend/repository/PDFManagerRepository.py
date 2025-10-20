@@ -73,7 +73,33 @@ class PDFManagerRepository:
         
         con.commit()
         con.close()
+     
+    def get_ref_count(self,hash_value):
+         con = sqlite3.connect(self.db_path)
+         cur = con.cursor()
+    
+         cur.execute("SELECT COUNT(*) FROM PDFMANAGER WHERE hash_value = ? ",(hash_value,))
         
+         #unpacks the tuple thats why you did this
+         (res,) = cur.fetchone() 
+         
+         con.close()
+         print(res)
+         print(int(res))
+         return res    
+     
+    def get_searchable_documents(self,user_id):
+         con = sqlite3.connect(self.db_path)
+         cur = con.cursor()
+         
+         cur.execute("SELECT hash_value FROM PDFMANAGER WHERE user_id = ?",(user_id,))
+        
+         result = cur.fetchall()
+
+         hash_list = [row[0] for row in result]
+        
+         return hash_list
+            
         
     def file_exists(self,user_id,hash_value):
         con = sqlite3.connect(self.db_path)

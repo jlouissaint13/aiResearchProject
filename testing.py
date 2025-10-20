@@ -37,7 +37,7 @@ if __name__ == '__main__':
                 case 5:
                     chroma.check_db()
                 case 6:
-                    chroma.delete()
+                    chroma.delete_database()
                 case 7:
                     sys.exit(1)
                 case 8:

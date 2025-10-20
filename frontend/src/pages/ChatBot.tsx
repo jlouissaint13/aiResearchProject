@@ -308,7 +308,7 @@ const ChatBot = () => {
             message_id: uuidv4(),
             user_id: localStorage.getItem("userID"),
             conversation_id : sessionStorage.getItem("conversationID"),
-            logged_in : localStorage.getItem("logged_in")
+            logged_in : localStorage.getItem("loggedIn")
         };
 
 // @ts-ignore

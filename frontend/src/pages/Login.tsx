@@ -122,7 +122,7 @@ const Login = () => {
     }
 
     function continueAsGuest() {
-        localStorage.setItem("logged_in","false")
+        localStorage.setItem("loggedIn","false")
         navigate("/Choice")
     }
 

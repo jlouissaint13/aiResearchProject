@@ -31,7 +31,10 @@ class ChromaRepository:
                 "created_at": metadata_dto.created_at,
                 "modified_at": metadata_dto.modified_at,
                 "hash_value": metadata_dto.hash_value,
-                "file_name": metadata_dto.file_name
+                "file_name": metadata_dto.file_name,
+                
+                
+                
         })
 
     # Batch insert
@@ -46,22 +49,46 @@ class ChromaRepository:
         return 200
 
     
-    def delete_chunks_by_hash_value(self,hash_value):
-        self.collection.delete(where={"hash_value": hash_value})
+    def delete_chunks_by_hash_value(self,hash_value,ref_count):
+        
+        if ref_count == 0:
+            print(ref_count,"deleted")
+            self.collection.delete(where={"hash_value": hash_value})
+            return 
+        print("not removing pdf user still referencing it",ref_count)
+
+
+    def query_results_logged_in(self,query_embedding,top_k,user_pdfs):
+        return self.collection.query(
+           query_embeddings=[query_embedding],
+           n_results = top_k,
+            where={
+                "hash_value": {
+                    "$in": user_pdfs
+                }
+            }
+       )
+    
+    
+    def query_results_guest(self,query_embedding,top_k=5):
+        return self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results = top_k,
+        )
+    
     
 
-
-
-    def hash_exists(self,hash_value):
+    def hash_exists(self, hash_value):
         result = self.collection.get(where={"hash_value": hash_value})
-        if len(result["ids"]) == 0:
+        if not result["ids"]:
             return False
+
         return True
 
 
 
-    #deletes db
-    def delete(self):
+        #deletes db
+    def delete_database(self):
         database_directory = pathlib.Path(__file__).parent / "chromadb"
         if database_directory.exists():
             shutil.rmtree(database_directory)

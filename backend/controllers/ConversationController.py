@@ -12,6 +12,9 @@ def create_new_conversation():
     user_id = data.get("user_id")
     title = data.get("title")
     
+    #if guest just happy path
+    if user_id is None:
+        return "success" , 200
     
     
     return conversation_service.create_conversation(conversation_id,user_id,title)

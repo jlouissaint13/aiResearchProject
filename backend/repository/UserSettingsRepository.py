@@ -63,5 +63,6 @@ class UserSettingsRepository:
         cur.execute("DELETE FROM USERS where user_id = ?",(user_id,))
         cur.execute("DELETE FROM CONVERSATIONS WHERE user_id = ?",(user_id,))
         cur.execute("DELETE FROM MESSAGES WHERE user_id = ?",(user_id,))
+        cur.execute("Delete FROM PDFMANAGER WHERE user_id = ?",(user_id,))
         con.commit()
         con.close()

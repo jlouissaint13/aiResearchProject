@@ -4,19 +4,16 @@ from backend.services.ChunkSplitter import ChunkSplitter
 from backend.services.EmbedHandler import EmbedHandler
 from backend.services.MetadataService import MetadataServie
 from backend.repository.ChromaRepository import ChromaRepository
+from backend.services.PDFManagerService import PDFManagerService
 class ChromaService:
     def __init__(self):
         self.chunkSplitter = ChunkSplitter()
         self.embedHandler = EmbedHandler()
         self.chroma_repository = ChromaRepository()
-
-    def store_pdf_chroma(self, pdf_path, file_name):
+        self.pdfManager = PDFManagerService()
+    def store_pdf_chroma(self, pdf_path, file_name,user_id):
         metadata = MetadataServie(pdf_path)
         metadata_info = metadata.get_metadata_dto(file_name)
-        
-        if self.hash_exists(metadata_info):
-            print("hash exists but may be on different account so we won't return 409 anymore")
-            return None 
         
         
         md_text = pymupdf4llm.to_markdown(pdf_path)
@@ -35,4 +32,9 @@ class ChromaService:
     
     
     def delete_from_chroma_db(self,hash_value):
-        self.chroma_repository.delete_chunks_by_hash_value(hash_value)
+        ref_count = self.pdfManager.get_ref_count(hash_value)
+        
+        self.chroma_repository.delete_chunks_by_hash_value(hash_value,ref_count)
+        
+        
+    

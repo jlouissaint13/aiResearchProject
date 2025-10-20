@@ -23,10 +23,15 @@ class MessageService:
         
         
         role = 'model'
-        content = self.rag_service.response(user_content)
+        
+        
+        if logged_in == 'false': 
+            user_id = "guest"
+        
+        content = self.rag_service.response(user_content,user_id)
         if logged_in == 'true':
             self.message_repository.insert_message_by_id(model_message_id,conversation_id,content,role,user_id) 
-        
+            
         
         
         response = {
