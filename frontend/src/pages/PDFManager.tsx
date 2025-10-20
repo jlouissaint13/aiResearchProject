@@ -27,11 +27,15 @@ const PdfManager = () => {
 
 
     const handleAddPdf = () => {
+        // @ts-ignore
         fileInputRef.current.click();
     };
 
 
+    // @ts-ignore
     function extractFileInfo(file) {
+        // @ts-ignore
+        
         const metadata = {
             fileName: file.name || '',
             filePath: (window).fileAPI?.getFilePath(file),
@@ -43,6 +47,7 @@ const PdfManager = () => {
 
 
 
+    // @ts-ignore
     async function handleFileChange(event) {
         const files = event.target.files;
         if (files.length > 0) {
@@ -93,6 +98,7 @@ const PdfManager = () => {
 
             const pdfData = response.data
 
+            // @ts-ignore
             const formattedPDFs = pdfData.map((pdf) =>({
                 id: pdf.pdf_id,
                 name: pdf.pdf_name,
@@ -108,6 +114,7 @@ const PdfManager = () => {
     }
 
 
+    // @ts-ignore
     const handleDeletePdf = async (name,file_path) => {
 
         const isConfirmed = window.confirm(

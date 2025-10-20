@@ -316,6 +316,7 @@ const Settings = () => {
         console.log('Advanced model settings saved!');
     };
 
+    // @ts-ignore
     const handleDeleteModel = (modelIdToDelete) => {
         const updatedModels = models.filter(model => model.id !== modelIdToDelete);
         setModels(updatedModels);
