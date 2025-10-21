@@ -12,10 +12,13 @@ def create_new_conversation():
     user_id = data.get("user_id")
     title = data.get("title")
       
-    
-    return conversation_service.create_conversation(conversation_id,user_id,title)
+      
+    if user_id is not None: 
+      conversation_service.create_conversation(conversation_id,user_id,title)
+      return "success" , 200
+        
 
-  
+    return "success", 200
 
 @conversation_blueprint.route("/get_conversations_by_id",methods=['POST'])
 def get_conversation_by_id():
@@ -34,15 +37,4 @@ def delete_conversation_by_id():
     
     return "success" , 200
 
-
-
-#not planning on using found better solution
-@conversation_blueprint.route("/get_conversation_by/<title>/<user_id>",methods=['GET'])
-def get_conversation_by_title_user_id(title,user_id):
-    normalized_title = title.replace(" ","").lower()
-    conversation_id = conversation_service.get_conversation_by_title(normalized_title,user_id)
-    response = {
-        "conversationID": conversation_id
-    }
-    return response, 200
 

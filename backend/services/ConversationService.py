@@ -11,7 +11,7 @@ class ConversationService:
         
         
         self.conversation_repository.create_conversation(conversation_id,user_id,title)
-        return 'success' , 200
+        
 
 
     def get_conversations(self,user_id):

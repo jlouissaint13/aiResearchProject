@@ -20,8 +20,11 @@ def get_all_messages():
     data = request.get_json()
     user_id = data.get("user_id")
     conversation_id = data.get("conversation_id")
-    messages = message_service.get_messages_by_id(user_id,conversation_id)
-    return jsonify(messages),200
+    
+    if user_id is not None:
+        messages = message_service.get_messages_by_id(user_id,conversation_id)
+        return jsonify(messages),200
+    return "success" , 200
 
 @message_blueprint.route("/send_message",methods=['POST'])
 def message_handler():

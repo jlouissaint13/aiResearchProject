@@ -39,6 +39,7 @@ class PDFManagerRepository:
         con.close()
         return res
     
+
     
     
     def retrieve_all_pdfs_by_user_id(self,user_id):
@@ -86,6 +87,19 @@ class PDFManagerRepository:
          con.close()
          
          return res    
+    
+    def get_total_hash_count(self):
+        con = sqlite3.connect(self.db_path)
+        cur = con.cursor()
+        
+        cur.execute("SELECT COUNT(hash_value) FROM PDFMANAGER")
+
+        (res,) = cur.fetchone()
+        
+        con.close()
+        
+        return res
+    
      
     def get_searchable_documents(self,user_id):
          con = sqlite3.connect(self.db_path)

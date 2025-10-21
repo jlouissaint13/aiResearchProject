@@ -1,9 +1,8 @@
 import { Box, Typography, List, ListItem, ListItemButton, ListItemText, ListItemIcon} from '@mui/material';
 import LiveHelpIcon from '@mui/icons-material/LiveHelp';
-import SearchIcon from '@mui/icons-material/Search';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
-
+import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import {useNavigate} from "react-router-dom";
 import SettingsIcon from "@mui/icons-material/Settings";
@@ -15,6 +14,7 @@ const Choice = () => {
 
     const menuItemsLoggedIn = [
         {text: "Chat", icon: <LiveHelpIcon />, value: "chat" },
+        {text: "Temporary Chat", icon: <HourglassBottomIcon />, value: "chatTemp" },
         {text: "PDF Manager", icon: <PictureAsPdfIcon />, value: "checkDB" },
         {text: "Enter API Key", icon: <VpnKeyIcon /> , value: "apiKey" },
         {text: "Settings", icon:<SettingsIcon /> , value: "settings"},
@@ -30,6 +30,7 @@ const Choice = () => {
     function handleMenu(value) {
         switch (value) {
             case "chat": navigate("/ChatBot"); break;
+            case "chatTemp": navigate("/chatbotTemp"); break;
             case "insertPDF": navigate("/uploadPDF"); break;
             case "apiKey": navigate("/StoreKey"); break;
             case "checkDB": navigate("/PDFManager"); break;

@@ -20,11 +20,12 @@ class RagService:
         query_embedding = self.embed.encode([self.query]).tolist()[0]
         
         user_accessible_pdfs = self.pdfManagerService.get_searchable_documents(self.user_id)
+        all_accessible_pdfs = self.pdfManagerService.get_all_documents_length()
         #if the list is empty that means the user hasn't entered any pdfs lets skip the chromadb check
-        if (len(user_accessible_pdfs) == 0):
+        if len(user_accessible_pdfs) == 0 and self.user_id is not None:
             return ""
         
-        if self.user_id != "guest":
+        if self.user_id is not None:
             results = self.chroma.query_results_logged_in(query_embedding,RagConfiguration.TOP_K,user_accessible_pdfs)
         else:
             results = self.chroma.query_results_guest(query_embedding)

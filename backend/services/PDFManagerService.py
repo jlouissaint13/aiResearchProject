@@ -57,6 +57,9 @@ class PDFManagerService:
     def get_searchable_documents(self,user_id):
         return self.pdf_manager_repository.get_searchable_documents(user_id)
         
+    def get_all_documents_length(self):
+        return self.pdf_manager_repository.get_total_hash_count()
+    
     
     def delete_pdf_from_database(self,user_id,file_path):
         self.metadata_service = MetadataServie(file_path)

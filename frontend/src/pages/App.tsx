@@ -7,6 +7,7 @@ import Choice from "./Choice.tsx";
 import StoreKey from "./StoreKey.tsx";
 import PDFManager from "./PDFManager.tsx";
 import Settings from "./Settings.tsx";
+import ChatBotTemporary from "./ChatBotTemporary.tsx";
 const App = () => (
     <div className="App">
         <BrowserRouter>
@@ -19,6 +20,7 @@ const App = () => (
                 <Route path="storeKey" element={<StoreKey/>} />
                 <Route path="pdfManager" element={<PDFManager/>} />
                 <Route path="settings" element={<Settings/>} />
+                <Route path="chatbotTemp" element={<ChatBotTemporary/>}/>
             </Routes>
         </BrowserRouter>
     </div>
