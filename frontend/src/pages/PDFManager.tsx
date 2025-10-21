@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState} from 'react';
 import {
-    Box, Button, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, TextField, Typography, Divider
+    Box, Button, IconButton, List, ListItem, ListItemButton, ListItemIcon, ListItemText, TextField, Typography, Divider,
+    LinearProgress 
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
@@ -11,12 +12,13 @@ import axios from 'axios';
 
 const initialPdfs = [
     { id: 101, name: 'Sample Document A.pdf', filePath: 'uploads/test_a.pdf' },
-    
+
 ];
 
 const PdfManager = () => {
     const [pdfs, setPdfs] = useState(initialPdfs);
     const [searchTerm, setSearchTerm] = useState('');
+    const [isLoading, setIsLoading] = useState(false); 
     const navigate = useNavigate();
 
     const fileInputRef = useRef(null);
@@ -35,7 +37,7 @@ const PdfManager = () => {
     // @ts-ignore
     function extractFileInfo(file) {
         // @ts-ignore
-        
+
         const metadata = {
             fileName: file.name || '',
             filePath: (window).fileAPI?.getFilePath(file),
@@ -51,6 +53,7 @@ const PdfManager = () => {
     async function handleFileChange(event) {
         const files = event.target.files;
         if (files.length > 0) {
+            setIsLoading(true); // <-- ADDED: Start loading
             const newFile = files[0];
 
             const fileInfo = extractFileInfo(newFile);
@@ -66,7 +69,6 @@ const PdfManager = () => {
                 if (response.status === 200) {
                     alert("PDF added successfully")
                     await retrieveAllPDFS();
-                    return
                 }
 
             }catch (error) {
@@ -76,12 +78,11 @@ const PdfManager = () => {
                     if (status === 409) {
                         alert("PDF has already been added")
                     }
-
                 }
-
+            } finally {
+                setIsLoading(false); 
+                event.target.value = null; 
             }
-
-            event.target.value = null;
         }
     }
 
@@ -94,6 +95,7 @@ const PdfManager = () => {
             user_id: localStorage.getItem('userID')
         }
         try {
+           
             const response = await axios.post('http://localhost:8000/pdf_manager/retrieve_all_pdfs',data)
 
             const pdfData = response.data
@@ -117,6 +119,9 @@ const PdfManager = () => {
     // @ts-ignore
     const handleDeletePdf = async (name,file_path) => {
 
+        
+        if (isLoading) return; // <-- ADDED
+
         const isConfirmed = window.confirm(
             `Are you sure you want to delete the PDF titled: "${name}"? This action cannot be undone.`
         );
@@ -124,6 +129,8 @@ const PdfManager = () => {
         if (!isConfirmed) {
             return
         }
+
+        setIsLoading(true); 
         const dataInfo = {
             user_id : localStorage.getItem("userID"),
             file_path: file_path
@@ -138,11 +145,10 @@ const PdfManager = () => {
                 await retrieveAllPDFS()
 
             }
-
-
-
         }catch (error) {
-
+           
+        } finally {
+            setIsLoading(false); 
         }
     };
 
@@ -173,6 +179,7 @@ const PdfManager = () => {
                 onChange={handleFileChange}
                 accept=".pdf"
                 style={{ display: 'none' }}
+                disabled={isLoading} 
             />
             <Box
                 sx={{
@@ -186,6 +193,7 @@ const PdfManager = () => {
                     onClick={handleBack}
                     variant="text"
                     startIcon={<ArrowBackIcon />}
+                    disabled={isLoading} 
                     sx={{
                         color: '#a0a0a0',
                         textTransform: 'none',
@@ -217,8 +225,28 @@ const PdfManager = () => {
                     maxWidth: 500,
                     maxHeight: '90vh',
                     border: '1px solid rgba(255, 255, 255, 0.05)',
+                    position: 'relative', 
+                    overflow: 'hidden',   
                 }}
             >
+                {/* --- ADDED LOADING BAR --- */}
+                {isLoading && (
+                    <LinearProgress
+                        sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: '4px',
+                            backgroundColor: 'rgba(26, 115, 232, 0.3)',
+                            '& .MuiLinearProgress-bar': {
+                                backgroundColor: '#1a73e8',
+                            },
+                        }}
+                    />
+                )}
+                {/* --- END LOADING BAR --- */}
+
                 <Box sx={{ width: '100%', textAlign: 'center', mb: 1 }}>
                     <Typography
                         variant="h5"
@@ -241,6 +269,7 @@ const PdfManager = () => {
                     label="Search documents..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    disabled={isLoading} 
                     sx={{
                         mt: 1,
                         '& .MuiOutlinedInput-root': {
@@ -269,6 +298,7 @@ const PdfManager = () => {
                     variant="contained"
                     onClick={handleAddPdf}
                     startIcon={<AddCircleIcon />}
+                    disabled={isLoading} 
                     sx={{
                         p: 1.25,
                         borderRadius: 1,
@@ -283,7 +313,7 @@ const PdfManager = () => {
                         },
                     }}
                 >
-                    Add New PDF Document 
+                    Add New PDF Document
                 </Button>
 
                 <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
@@ -314,6 +344,7 @@ const PdfManager = () => {
                                             disableRipple
                                             disableFocusRipple
                                             disableTouchRipple
+                                            disabled={isLoading} 
                                             sx={{
                                                 color: '#f44336',
                                                 p: 1,
@@ -325,7 +356,7 @@ const PdfManager = () => {
                                                     boxShadow: 'none',
                                                     bgcolor: 'transparent',
                                                 },
-                                              
+
                                                 '&:active': {
                                                     bgcolor: 'transparent',
                                                     boxShadow: 'none',
@@ -347,6 +378,7 @@ const PdfManager = () => {
                                     }}
                                 >
                                     <ListItemButton
+                                        disabled={isLoading} 
                                         sx={{
                                             py: 1.2,
                                             px: 1.5,

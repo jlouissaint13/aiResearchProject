@@ -287,7 +287,8 @@ const ChatBot = () => {
             await navigator.clipboard.writeText(text);
             alert("Copied to clipboard!");
         } catch (err) {
-          
+            console.error('Failed to copy text: ', err);
+            alert("Failed to copy text.");
         }
     };
 
@@ -642,9 +643,9 @@ const ChatBot = () => {
                     ) : (
                         messages.map((msg, index) => (
                             <Box key={msg.id} sx={{ display: 'flex', justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
-                                {/* Flex container for bubble + potential icon below */}
+                                
                                 <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: '80%', alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
-                                    {/* Message Bubble */}
+                                    
                                     <Box
                                         sx={{
                                             p: 1.5,
@@ -652,13 +653,12 @@ const ChatBot = () => {
                                             bgcolor: msg.sender === 'user' ? '#1a73e8' : '#282a2e',
                                             color: msg.sender === 'user' ? '#fff' : '#e0e0e0',
                                             boxShadow: '0px 1px 3px rgba(0, 0, 0, 0.2)',
-                                            // Removed position: 'relative' and hover styles
                                         }}
                                     >
                                         <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', fontWeight: 500 }}>{msg.content}</Typography>
                                     </Box>
 
-                                    {/* Conditionally render Copy Icon *BELOW* the bubble for the last message */}
+                                    
                                     {index === messages.length - 1 && (
                                         <IconButton
                                             size="small"
