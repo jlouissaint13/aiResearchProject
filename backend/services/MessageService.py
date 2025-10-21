@@ -7,8 +7,8 @@ class MessageService:
         self.rag_service = RagService()
         
     def send_user_message(self, message_id, conversation_id, content, role, user_id,logged_in):
-        if logged_in == 'true':
-            self.message_repository.insert_message_by_id(message_id, conversation_id, content, role, user_id)
+       
+        self.message_repository.insert_message_by_id(message_id, conversation_id, content, role, user_id)
         
         
         
@@ -25,12 +25,11 @@ class MessageService:
         role = 'model'
         
         
-        if logged_in == 'false': 
-            user_id = "guest"
+       
         
         content = self.rag_service.response(user_content,user_id)
-        if logged_in == 'true':
-            self.message_repository.insert_message_by_id(model_message_id,conversation_id,content,role,user_id) 
+        
+        self.message_repository.insert_message_by_id(model_message_id,conversation_id,content,role,user_id) 
             
         
         

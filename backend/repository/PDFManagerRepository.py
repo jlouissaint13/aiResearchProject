@@ -35,7 +35,7 @@ class PDFManagerRepository:
         
         
         cur.execute("SELECT hash_value from PDFMANAGER where file_path= ?",(file_path,))
-        res = cur.fetchone()
+        (res,) = cur.fetchone()
         con.close()
         return res
     
@@ -84,8 +84,7 @@ class PDFManagerRepository:
          (res,) = cur.fetchone() 
          
          con.close()
-         print(res)
-         print(int(res))
+         
          return res    
      
     def get_searchable_documents(self,user_id):

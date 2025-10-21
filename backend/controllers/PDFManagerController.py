@@ -45,7 +45,7 @@ def delete_pdf():
     user_id = data.get('user_id')
     pdf_path = data.get("file_path")
     
-    hash_value = str(pdf_service.retrieve_hash_value(pdf_path))
+    hash_value = pdf_service.retrieve_hash_value(pdf_path)
     
     pdf_service.delete_pdf_from_database(user_id, pdf_path)    
     

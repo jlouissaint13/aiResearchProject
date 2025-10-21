@@ -287,8 +287,7 @@ const ChatBot = () => {
             await navigator.clipboard.writeText(text);
             alert("Copied to clipboard!");
         } catch (err) {
-            console.error('Failed to copy text: ', err);
-            alert("Failed to copy text.");
+          
         }
     };
 
@@ -668,8 +667,8 @@ const ChatBot = () => {
                                             disableFocusRipple
                                             disableTouchRipple
                                             sx={{
-                                                mt: 0.5, 
-                                                alignSelf: 'flex-end', 
+                                                mt: 0.5,
+                                                alignSelf: 'flex-end',
                                                 color: '#8e8e8e',
                                                 '&:hover': { color: '#e0e0e0', bgcolor: 'transparent' },
                                                 '&:active': { bgcolor: 'transparent' },

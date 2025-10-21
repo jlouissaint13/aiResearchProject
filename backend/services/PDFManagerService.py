@@ -62,7 +62,7 @@ class PDFManagerService:
         self.metadata_service = MetadataServie(file_path)
         hash_value = self.metadata_service.hash_pdf()
         self.pdf_manager_repository.delete_pdf_by_user_id_and_hash_value(user_id,hash_value)
-        return 200
+       
          
         
     def delete_pdf_from_local_storage(self,file_path,hash_value):

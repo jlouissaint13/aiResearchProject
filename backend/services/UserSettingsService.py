@@ -22,7 +22,7 @@ class UserSettingsService:
     
     
     def user_exists(self,user_id,email,username):
-        return self.user_settings_repository.user_exists(user_id,email.email,username)
+        return self.user_settings_repository.user_exists(user_id,email,username)
     
     
     def get_user_info(self,user_id):
