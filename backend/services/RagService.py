@@ -63,7 +63,7 @@ class RagService:
     @staticmethod
     def prompt_builder():
         template = """
-You are an **expert research extraction agent**.
+You are an **expert resex arch extraction agent**.
 Your sole purpose is to provide a concise, factual, and direct answer to the user's question, strictly using **ONLY** the provided **CONTEXT**.
 
 ### CRITICAL GUARDRAIL - DO NOT GUESS

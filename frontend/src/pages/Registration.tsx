@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import { Box, Typography, TextField, Button, Link } from '@mui/material';
+import {Box, Button, Link, TextField, Typography} from '@mui/material';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import {useNavigate} from "react-router-dom";
 
@@ -14,8 +14,10 @@ const Registration = () => {
     const [invalidEmail,setInvalidEmail] = useState<boolean>(false);
     const [passwordMatchError,setPasswordMatchError] = useState<boolean>(false);
     async function registration() {
+       
+        const firstNameCapitalized = capitalizeFirstName().trim();
         const data = {
-            firstName: firstName.trim(),
+            firstName: firstNameCapitalized,
             email: email.trim(),
             username: username.trim(),
             password: password.trim(),
@@ -55,7 +57,7 @@ const Registration = () => {
             });
             if (response.status === 200) {
                 clearFields()
-                alert("Welcome "+ firstName.trim())
+                alert("Welcome "+ firstNameCapitalized)
                 navigate('/Login');
 
             }
@@ -66,7 +68,7 @@ const Registration = () => {
             console.log("error")
         }
     }
-
+    //replace with regex
     function isEmailValid(email:string): boolean {
         if (email.includes('@') && email.includes('.com')) {
             setInvalidEmail(true)
@@ -109,6 +111,11 @@ const Registration = () => {
 
     function haveAccount() {
         navigate("/login")
+    }
+    
+    
+    function capitalizeFirstName() : string {
+        return firstName[0].toUpperCase() + firstName.slice(1);
     }
 
 
