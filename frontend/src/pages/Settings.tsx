@@ -2,7 +2,8 @@ import {useEffect, useState} from 'react';
 import {
     Box, Typography, Button, TextField, Divider, List, ListItem,
     ListItemText, ListItemIcon, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio,
-    Dialog, DialogTitle, DialogContent, DialogActions, IconButton
+    Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Tooltip,
+    Select, MenuItem, InputLabel // Added Select, MenuItem, InputLabel
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -16,9 +17,7 @@ const initialModels = [
     { id: 'claude-3-opus', name: 'Claude 3 Opus' },
 ];
 const initialDefaultModel = 'gemini-2.5-flash';
-const initialTemperature = 0.7;
-const initialTopP = 0.9;
-const initialTopK = 40;
+const initialPromptType = 'deep-research'; 
 
 const textFieldStyle = {
     '& .MuiOutlinedInput-root': {
@@ -72,6 +71,12 @@ const deleteButtonStyle = {
     },
 };
 
+const promptDescriptions = {
+    'deep-research': 'Provides a thorough, structured, and in-depth answer. It explains connections and sticks strictly to the provided facts.',
+    'creative': 'Generates a thoughtful and imaginative response. It connects ideas, draws new insights, and explores different angles based on the text.',
+    'short-and-sweet': 'Delivers a concise, clear, and direct answer. It\'s accurate and gets right to the point, avoiding any filler.'
+};
+
 
 const Settings = () => {
     const [username, setUsername] = useState('');
@@ -86,10 +91,8 @@ const Settings = () => {
 
     const [models, setModels] = useState(initialModels);
     const [defaultModel, setDefaultModel] = useState(initialDefaultModel);
-
-    const [temperature, setTemperature] = useState(initialTemperature);
-    const [topP, setTopP] = useState(initialTopP);
-    const [topK, setTopK] = useState(initialTopK);
+    
+    const [promptType, setPromptType] = useState(initialPromptType);
 
     const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
@@ -311,9 +314,10 @@ const Settings = () => {
     };
 
 
-    const handleSaveAdvanced = () => {
-        console.log('Saving Advanced Settings:', { defaultModel, temperature, topP, topK });
-        console.log('Advanced model settings saved!');
+    // Updated save handler
+    const handleSaveConfiguration = () => {
+        console.log('Saving Configuration:', { defaultModel, promptType });
+        alert('Model and prompt settings saved!');
     };
 
     // @ts-ignore
@@ -458,31 +462,113 @@ const Settings = () => {
                 </Box>
 
                 <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
-
+                
+                {/* --- MODIFIED SECTION --- */}
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
                     <Typography variant="h6" sx={{ color: '#1a73e8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, mb: -1 }}>
-                        Advanced Model Parameters
+                        Model & Prompt Settings
                     </Typography>
                     <Box sx={{ p: 3, border: '1px solid #3e4042', borderRadius: 1, bgcolor: '#282a2e', display: 'flex', flexDirection: 'column', gap: 3 }}>
-                        <FormControl component="fieldset">
-                            <FormLabel component="legend" sx={{ color: '#8e8e8e', mb: 1, '&.Mui-focused': { color: '#8e8e8e' } }}>Default Model</FormLabel>
-                            <RadioGroup value={defaultModel} onChange={(e) => setDefaultModel(e.target.value)}>
+                        
+                        {/* New Dropdown for Default Model */}
+                        <FormControl fullWidth variant="outlined">
+                            <InputLabel 
+                                id="default-model-select-label"
+                                sx={{
+                                    color: '#8e8e8e',
+                                    '&.Mui-focused': { color: '#1a73e8' },
+                                }}
+                            >
+                                Current Model
+                            </InputLabel>
+                            <Select
+                                labelId="default-model-select-label"
+                                id="default-model-select"
+                                value={defaultModel}
+                                onChange={(e) => setDefaultModel(e.target.value)}
+                                label="Default Model"
+                                sx={{
+                                    color: '#e0e0e0',
+                                    bgcolor: '#282a2e',
+                                    borderRadius: 1,
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#3e4042',
+                                        transition: 'border-color 0.3s',
+                                    },
+                                    '&:hover .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#5e6062',
+                                    },
+                                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#1a73e8',
+                                        borderWidth: '2px',
+                                    },
+                                    '& .MuiSvgIcon-root': { // Style the dropdown arrow
+                                        color: '#8e8e8e',
+                                    },
+                                }}
+                                MenuProps={{
+                                    PaperProps: {
+                                        sx: {
+                                            bgcolor: '#282a2e',
+                                            color: '#e0e0e0',
+                                            border: '1px solid #3e4042',
+                                        },
+                                    },
+                                }}
+                            >
                                 {models.map((model) => (
-                                    <FormControlLabel key={model.id} value={model.id} control={<Radio sx={{ color: '#8e8e8e', '&.Mui-checked': { color: '#1a73e8' } }} />} label={model.name} />
+                                    <MenuItem 
+                                        key={model.id} 
+                                        value={model.id}
+                                        sx={{
+                                            '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.08)' },
+                                            '&.Mui-selected': { bgcolor: 'rgba(26, 115, 232, 0.2)' },
+                                            '&.Mui-selected:hover': { bgcolor: 'rgba(26, 115, 232, 0.3)' },
+                                        }}
+                                    >
+                                        {model.name}
+                                    </MenuItem>
                                 ))}
+                            </Select>
+                        </FormControl>
+
+                        <Divider sx={{ my: 1, bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
+
+                        {/* Prompt Settings Section */}
+                        <FormControl component="fieldset">
+                            <FormLabel component="legend" sx={{ color: '#8e8e8e', mb: 1, '&.Mui-focused': { color: '#8e8e8e' } }}>Prompt Type</FormLabel>
+                            <RadioGroup value={promptType} onChange={(e) => setPromptType(e.target.value)}>
+                                <Tooltip title={promptDescriptions['deep-research']} placement="right">
+                                    <FormControlLabel
+                                        value="deep-research"
+                                        control={<Radio sx={{ color: '#8e8e8e', '&.Mui-checked': { color: '#1a73e8' } }} />}
+                                        label="Deep Research"
+                                    />
+                                </Tooltip>
+                                <Tooltip title={promptDescriptions['creative']} placement="right">
+                                    <FormControlLabel
+                                        value="creative"
+                                        control={<Radio sx={{ color: '#8e8e8e', '&.Mui-checked': { color: '#1a73e8' } }} />}
+                                        label="Creative"
+                                    />
+                                </Tooltip>
+                                <Tooltip title={promptDescriptions['short-and-sweet']} placement="right">
+                                    <FormControlLabel
+                                        value="short-and-sweet"
+                                        control={<Radio sx={{ color: '#8e8e8e', '&.Mui-checked': { color: '#1a73e8' } }} />}
+                                        label="Short and Sweet"
+                                    />
+                                </Tooltip>
                             </RadioGroup>
                         </FormControl>
-                        <Typography variant="body2" sx={{ color: '#8e8e8e', mt: -1 }}>
-                            Adjusting these parameters affects the creativity and randomness of the responses.
-                        </Typography>
-                        <TextField fullWidth variant="outlined" label="Temperature (0.0 - 1.0)" type="number" value={temperature} onChange={(e) => setTemperature(parseFloat(e.target.value))} inputProps={{ min: 0.0, max: 1.0, step: 0.1 }} sx={textFieldStyle} />
-                        <TextField fullWidth variant="outlined" label="Top P (Nucleus Sampling)" type="number" value={topP} onChange={(e) => setTopP(parseFloat(e.target.value))} inputProps={{ min: 0.0, max: 1.0, step: 0.05 }} sx={textFieldStyle} />
-                        <TextField fullWidth variant="outlined" label="Top K (Token Selection)" type="number" value={topK} onChange={(e) => setTopK(parseInt(e.target.value))} inputProps={{ min: 1, step: 1 }} sx={textFieldStyle} />
-                        <Button fullWidth variant="contained" onClick={handleSaveAdvanced} sx={primaryButtonStyle}>
-                            Save Model Configuration
+                        
+                        <Button fullWidth variant="contained" onClick={handleSaveConfiguration} sx={primaryButtonStyle}>
+                            Save Configuration
                         </Button>
                     </Box>
                 </Box>
+                {/* --- END OF MODIFIED SECTION --- */}
+
 
                 <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
 

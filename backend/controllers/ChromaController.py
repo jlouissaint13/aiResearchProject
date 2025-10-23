@@ -3,7 +3,7 @@ from flask import Blueprint,request
 
 
 
-chroma_blueprint = Blueprint("/chroma",__name__)
+chroma_blueprint = Blueprint("chroma",__name__)
 
 
   

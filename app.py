@@ -8,8 +8,8 @@ from backend.controllers.RagController import rag_blueprint
 from backend.controllers.RegisterController import register_blueprint
 from backend.controllers.UserSettingsController import user_settings_blueprint
 from backend.controllers.PDFManagerController import pdf_blueprint
-
-
+from backend.controllers.ModelSettingsController import model_settings_blueprint
+from backend.controllers.StoreModelController import store_model_blueprint
 app = Flask(__name__)
 
 
@@ -22,6 +22,9 @@ app.register_blueprint(conversation_blueprint,url_prefix="/conversation")
 app.register_blueprint(message_blueprint,url_prefix="/message")
 app.register_blueprint(user_settings_blueprint,url_prefix="/user_settings")
 app.register_blueprint(pdf_blueprint,url_prefix="/pdf_manager")
+app.register_blueprint(model_settings_blueprint,url_prefix="/model_settings")
+
+app.register_blueprint(store_model_blueprint,url_prefix="/store_model")
 
 CORS(app,origins="*")
 

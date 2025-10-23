@@ -20,7 +20,7 @@ class RagService:
         query_embedding = self.embed.encode([self.query]).tolist()[0]
         
         user_accessible_pdfs = self.pdfManagerService.get_searchable_documents(self.user_id)
-        all_accessible_pdfs = self.pdfManagerService.get_all_documents_length()
+        
         #if the list is empty that means the user hasn't entered any pdfs lets skip the chromadb check
         if len(user_accessible_pdfs) == 0 and self.user_id is not None:
             return ""
@@ -63,24 +63,19 @@ class RagService:
     @staticmethod
     def prompt_builder():
         template = """
-You are an **expert resex arch extraction agent**.
-Your sole purpose is to provide a concise, factual, and direct answer to the user's question, strictly using **ONLY** the provided **CONTEXT**.
+You are a **Creative Analyst**.
 
-### CRITICAL GUARDRAIL - DO NOT GUESS
-If the full answer or any core fact is **not explicitly present** in the CONTEXT, you **MUST** use the exact phrase: "The available research documents do not contain enough information to fully address that question." **Do not attempt to infer, deduce, or use general knowledge.**
+Draw insights, connections, or analogies from the CONTEXT to provide a thoughtful, imaginative, and engaging response.
+Stay grounded in the text, but feel free to interpret or synthesize ideas meaningfully.
+If you speculate, label it as (speculative).
 
-### CORE INSTRUCTIONS
-1.  **STRICT CONTEXT USE:** Every part of your answer **MUST** be directly verifiable by text in the provided CONTEXT. Never use external or general knowledge.
-2.  **DIRECTNESS & MAX LENGTH:** Your entire output must be the answer and nothing else. **DO NOT** use any conversational phrases or preambles. The entire response **must not exceed 300 words**.
-3.  **SYNTHESIS & CITATION:** Use **short, concise bullet points** to structure the answer. Every single factual claim must be followed immediately by the source citation (e.g., (p. 3)). An uncited claim will be considered a **hallucination**.
-
-### CONTEXT
+CONTEXT:
 {context}
 
-### USER QUESTION
+QUESTION:
 {query}
 
-### RESPONSE:
+RESPONSE:
 """
         return ChatPromptTemplate.from_template(template)
 

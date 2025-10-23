@@ -1,7 +1,7 @@
 from flask import Blueprint,request
 from backend.models.LoginModel import LoginModel
 from backend.services.LoginService import LoginService
-login_blueprint = Blueprint("/login",__name__)
+login_blueprint = Blueprint("login",__name__)
 login_service = LoginService()
 
 

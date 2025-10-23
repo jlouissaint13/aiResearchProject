@@ -1,25 +1,98 @@
 import { useState } from 'react';
-import { Box, Typography, TextField, Button, Alert } from '@mui/material';
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Alert,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    // --- New Imports ---
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+} from '@mui/material';
 import KeyIcon from '@mui/icons-material/Key';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
+// This is a helper object for the TextFields inside the modal
+const modalTextFieldStyles = {
+    '& .MuiOutlinedInput-root': {
+        borderRadius: 1,
+        bgcolor: '#282a2e',
+        '& fieldset': {
+            borderColor: '#3e4042',
+            transition: 'border-color 0.3s',
+        },
+        '&:hover fieldset': {
+            borderColor: '#5e6062',
+        },
+        '&.Mui-focused fieldset': {
+            borderColor: '#1a73e8',
+            borderWidth: '2px',
+        },
+    },
+    '& .MuiInputBase-input': { color: '#e0e0e0' },
+    '& .MuiInputLabel-root': { color: '#8e8e8e' }, // Default gray label
+    '& .MuiInputLabel-root.Mui-focused': { color: '#1a73e8' },
+};
+
+// --- New Helper for the Select Dropdown ---
+const modalSelectStyles = {
+    ...modalTextFieldStyles, // Inherit base styles
+    '& .MuiSvgIcon-root': { color: '#8e8e8e' }, // Dropdown arrow color
+    '& .MuiSelect-select': { color: '#e0e0e0' },
+};
+
+// --- New Provider List ---
+const providers = [
+    { id: 'openai', name: 'OpenAI' },
+    { id: 'gemini', name: 'Gemini' },
+    { id: 'deepseek', name: 'DeepSeek' },
+];
 
 const ApiKeyInput = () => {
+    // State for the main API key input
     const [apiKey, setApiKey] = useState('');
+    // State for the success message
     const [isSaved, setIsSaved] = useState(false);
 
-    const navigate = useNavigate()
-    const handleSave = () => {
-        if (apiKey.trim()) {
-            alert("API Key was saved")
-            setIsSaved(true);
+    // State for the modal
+    const [openModal, setOpenModal] = useState(false);
+    const [provider, setProvider] = useState(''); // This will now hold 'openai', 'gemini', etc.
+    const [keyName, setKeyName] = useState('');
 
-            setTimeout(() => setIsSaved(false), 3000);
+    const navigate = useNavigate();
+
+    const handleOpenModal = () => {
+        if (apiKey.trim()) {
+            setOpenModal(true);
         }
     };
 
+    const handleModalClose = () => {
+        setOpenModal(false);
+    };
+
+    const handleFinalSave = () => {
+        alert(`Saving:\nProvider: ${provider}\nName: ${keyName}\nKey: ${apiKey.substring(0, 10)}...`);
+
+        setOpenModal(false);
+        setIsSaved(true);
+        setTimeout(() => setIsSaved(false), 3000);
+
+        setApiKey('');
+        setProvider('');
+        setKeyName('');
+    };
+
     const handleBack = () => {
-        navigate("/Choice")
+        navigate("/Choice");
     };
 
     return (
@@ -37,6 +110,7 @@ const ApiKeyInput = () => {
                 p: 3,
             }}
         >
+            {/* ... (Back Button Box - no changes) ... */}
             <Box
                 sx={{
                     position: 'absolute',
@@ -81,8 +155,8 @@ const ApiKeyInput = () => {
                     border: '1px solid rgba(255, 255, 255, 0.05)',
                 }}
             >
+                {/* ... (Icon, Typography - no changes) ... */}
                 <KeyIcon sx={{ fontSize: 60, color: '#1a73e8' }} />
-
                 <Typography
                     variant="h5"
                     component="h1"
@@ -99,6 +173,7 @@ const ApiKeyInput = () => {
                     Paste your key to enable external model access.
                 </Typography>
 
+
                 <TextField
                     fullWidth
                     variant="outlined"
@@ -108,7 +183,21 @@ const ApiKeyInput = () => {
                         setApiKey(e.target.value);
                         setIsSaved(false);
                     }}
+                    // --- THIS SECTION IS UPDATED ---
                     sx={{
+                        mt: 1,
+                        '& .MuiInputBase-input': {
+                            color: '#e0e0e0',
+                            letterSpacing: '1px'
+                        },
+                        // Style for the label
+                        '& .MuiInputLabel-root': {
+                            color: '#e0e0e0' // Unfocused label color
+                        },
+                        '& .MuiInputLabel-root.Mui-focused': {
+                            color: '#1a73e8' // Focused label color
+                        },
+                        // Style for the border
                         '& .MuiOutlinedInput-root': {
                             borderRadius: 1,
                             bgcolor: '#282a2e',
@@ -124,17 +213,13 @@ const ApiKeyInput = () => {
                                 borderWidth: '2px',
                             },
                         },
-                        '& .MuiInputBase-input': { color: '#e0e0e0', letterSpacing: '1px' },
-                        '& .MuiInputLabel-root': { color: '#8e8e8e' },
-                        '& .MuiInputLabel-root.Mui-focused': { color: '#1a73e8' },
-                        mt: 1,
                     }}
                 />
 
                 <Button
                     fullWidth
                     variant="contained"
-                    onClick={handleSave}
+                    onClick={handleOpenModal}
                     disabled={!apiKey.trim()}
                     sx={{
                         p: 1.25,
@@ -177,6 +262,105 @@ const ApiKeyInput = () => {
                     </Alert>
                 )}
             </Box>
+
+            {/* --- UPDATED MODAL COMPONENT --- */}
+            <Dialog
+                open={openModal}
+                onClose={handleModalClose}
+                PaperProps={{
+                    sx: {
+                        bgcolor: '#1e2023',
+                        color: '#e0e0e0',
+                        borderRadius: 3,
+                        border: '1px solid #3e4042',
+                        boxShadow: '0 8px 30px rgba(0,0,0,0.7)',
+                        width: '100%',
+                        maxWidth: 400,
+                    }
+                }}
+            >
+                <DialogTitle sx={{ fontWeight: 600, letterSpacing: 0.5 }}>
+                    Add Key Details
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText sx={{ color: '#8e8e8e', mb: 3 }}>
+                        Please select the provider and give this key a nickname.
+                    </DialogContentText>
+
+                    {/* --- NEW SELECT DROPDOWN --- */}
+                    <FormControl
+                        fullWidth
+                        variant="outlined"
+                        sx={modalSelectStyles}
+                    >
+                        <InputLabel id="provider-select-label">Provider</InputLabel>
+                        <Select
+                            labelId="provider-select-label"
+                            id="provider-select"
+                            value={provider}
+                            label="Provider"
+                            onChange={(e) => setProvider(e.target.value)}
+                            // Style the dropdown menu itself
+                            MenuProps={{
+                                PaperProps: {
+                                    sx: {
+                                        bgcolor: '#282a2e',
+                                        color: '#e0e0e0',
+                                        border: '1px solid #3e4042',
+                                    },
+                                },
+                            }}
+                        >
+                            {providers.map((p) => (
+                                <MenuItem
+                                    key={p.id}
+                                    value={p.id}
+                                    sx={{
+                                        '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' },
+                                        '&.Mui-selected': { bgcolor: 'rgba(26, 115, 232, 0.2)' },
+                                        '&.Mui-selected:hover': { bgcolor: 'rgba(26, 115, 232, 0.3)' }
+                                    }}
+                                >
+                                    {p.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+
+                    <TextField
+                        margin="dense"
+                        id="keyName"
+                        label="Key Name (Nickname)"
+                        type="text"
+                        fullWidth
+                        variant="outlined"
+                        value={keyName}
+                        onChange={(e) => setKeyName(e.target.value)}
+                        sx={{...modalTextFieldStyles, mt: 3}} // Added margin-top
+                    />
+                </DialogContent>
+                <DialogActions sx={{ p: '16px 24px' }}>
+                    <Button
+                        onClick={handleModalClose}
+                        sx={{ color: '#8e8e8e', '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.05)' } }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleFinalSave}
+                        variant="contained"
+                        // Disable button if any field is empty
+                        disabled={!provider || !keyName.trim()}
+                        sx={{
+                            bgcolor: '#1a73e8',
+                            '&:hover': { bgcolor: '#1565c0' },
+                            '&.Mui-disabled': { bgcolor: '#282a2e', color: '#8e8e8e' }
+                        }}
+                    >
+                        Save Details
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
