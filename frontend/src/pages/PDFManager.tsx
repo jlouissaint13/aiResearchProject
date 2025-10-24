@@ -53,7 +53,7 @@ const PdfManager = () => {
     async function handleFileChange(event) {
         const files = event.target.files;
         if (files.length > 0) {
-            setIsLoading(true); // <-- ADDED: Start loading
+            setIsLoading(true); 
             const newFile = files[0];
 
             const fileInfo = extractFileInfo(newFile);
@@ -120,7 +120,7 @@ const PdfManager = () => {
     const handleDeletePdf = async (name,file_path) => {
 
         
-        if (isLoading) return; // <-- ADDED
+        if (isLoading) return; 
 
         const isConfirmed = window.confirm(
             `Are you sure you want to delete the PDF titled: "${name}"? This action cannot be undone.`
@@ -229,7 +229,6 @@ const PdfManager = () => {
                     overflow: 'hidden',   
                 }}
             >
-                {/* --- ADDED LOADING BAR --- */}
                 {isLoading && (
                     <LinearProgress
                         sx={{
@@ -245,7 +244,6 @@ const PdfManager = () => {
                         }}
                     />
                 )}
-                {/* --- END LOADING BAR --- */}
 
                 <Box sx={{ width: '100%', textAlign: 'center', mb: 1 }}>
                     <Typography

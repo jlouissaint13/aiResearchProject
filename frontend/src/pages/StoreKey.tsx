@@ -19,6 +19,7 @@ import {
 import KeyIcon from '@mui/icons-material/Key';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 // This is a helper object for the TextFields inside the modal
 const modalTextFieldStyles = {
@@ -38,32 +39,27 @@ const modalTextFieldStyles = {
         },
     },
     '& .MuiInputBase-input': { color: '#e0e0e0' },
-    '& .MuiInputLabel-root': { color: '#8e8e8e' }, // Default gray label
+    '& .MuiInputLabel-root': { color: '#8e8e8e' },
     '& .MuiInputLabel-root.Mui-focused': { color: '#1a73e8' },
 };
 
-// --- New Helper for the Select Dropdown ---
 const modalSelectStyles = {
-    ...modalTextFieldStyles, // Inherit base styles
-    '& .MuiSvgIcon-root': { color: '#8e8e8e' }, // Dropdown arrow color
+    ...modalTextFieldStyles,
+    '& .MuiSvgIcon-root': { color: '#8e8e8e' },
     '& .MuiSelect-select': { color: '#e0e0e0' },
 };
 
-// --- New Provider List ---
 const providers = [
     { id: 'openai', name: 'OpenAI' },
     { id: 'gemini', name: 'Gemini' },
 ];
 
 const ApiKeyInput = () => {
-    // State for the main API key input
     const [apiKey, setApiKey] = useState('');
-    // State for the success message
     const [isSaved, setIsSaved] = useState(false);
 
-    // State for the modal
     const [openModal, setOpenModal] = useState(false);
-    const [provider, setProvider] = useState(''); // This will now hold 'openai', 'gemini', etc.
+    const [provider, setProvider] = useState('');
     const [keyName, setKeyName] = useState('');
 
     const navigate = useNavigate();
@@ -78,17 +74,38 @@ const ApiKeyInput = () => {
         setOpenModal(false);
     };
 
-    const handleFinalSave = () => {
+    async function handleFinalSave() {
         alert(`Saving:\nProvider: ${provider}\nName: ${keyName}\nKey: ${apiKey.substring(0, 10)}...`);
 
-        setOpenModal(false);
-        setIsSaved(true);
-        setTimeout(() => setIsSaved(false), 3000);
 
+        const data = {
+            provider : provider,
+            key_name : keyName,
+            key : apiKey
+        }
+        try {
+            const response = await axios.post('http://localhost:8000/store_model/store',data);
+
+            if (response.status === 200) {
+                setIsSaved(true);
+            }
+
+        }catch (error) {
+            alert("Invalid Key")
+            setIsSaved(false)
+
+        }
+
+
+
+        setOpenModal(false);
         setApiKey('');
         setProvider('');
         setKeyName('');
-    };
+
+
+
+    }
 
     const handleBack = () => {
         navigate("/Choice");
@@ -109,7 +126,6 @@ const ApiKeyInput = () => {
                 p: 3,
             }}
         >
-            {/* ... (Back Button Box - no changes) ... */}
             <Box
                 sx={{
                     position: 'absolute',
@@ -154,7 +170,6 @@ const ApiKeyInput = () => {
                     border: '1px solid rgba(255, 255, 255, 0.05)',
                 }}
             >
-                {/* ... (Icon, Typography - no changes) ... */}
                 <KeyIcon sx={{ fontSize: 60, color: '#1a73e8' }} />
                 <Typography
                     variant="h5"
@@ -240,7 +255,7 @@ const ApiKeyInput = () => {
                         }
                     }}
                 >
-                    Save Key
+                    Save/Replace Key
                 </Button>
 
                 {isSaved && (
@@ -262,7 +277,6 @@ const ApiKeyInput = () => {
                 )}
             </Box>
 
-            {/* --- UPDATED MODAL COMPONENT --- */}
             <Dialog
                 open={openModal}
                 onClose={handleModalClose}
@@ -286,7 +300,6 @@ const ApiKeyInput = () => {
                         Please select the provider and give this key a nickname.
                     </DialogContentText>
 
-                    {/* --- NEW SELECT DROPDOWN --- */}
                     <FormControl
                         fullWidth
                         variant="outlined"

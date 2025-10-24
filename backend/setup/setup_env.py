@@ -7,6 +7,4 @@ def setup_env():
         with open(env_path, "w") as f:
             f.write("OPENAI_API_KEY=\n")
             f.write("GOOGLE_API_KEY=\n")
-            print("env created")
-    else:
-            print(".env file already exists.")
+

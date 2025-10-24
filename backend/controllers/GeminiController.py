@@ -1,19 +1,21 @@
 import google.generativeai as genai
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from flask import Blueprint, jsonify
 
-load_dotenv()
 
 gemini_blueprint = Blueprint("gemini_controller", __name__)
-GEMINI_KEY = os.getenv("GOOGLE_API_KEY")
+
 
 
 @gemini_blueprint.route("/gemini-models", methods=["GET"])
 def list_gemini_models():
-    
+
+    env_path = find_dotenv()
+    load_dotenv(env_path, override=True)
+    GEMINI_KEY = os.getenv("GOOGLE_API_KEY")
     if GEMINI_KEY is None:
-        return jsonify({"error": str("error")}), 500
+        return "gemini not active" , 404
     genai.configure(api_key=GEMINI_KEY)
     
     try:

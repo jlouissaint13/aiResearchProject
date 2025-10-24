@@ -9,7 +9,7 @@ from backend.controllers.RegisterController import register_blueprint
 from backend.controllers.UserSettingsController import user_settings_blueprint
 from backend.controllers.PDFManagerController import pdf_blueprint
 from backend.controllers.ModelSettingsController import model_settings_blueprint
-from backend.controllers.StoreModelController import store_model_blueprint
+from backend.controllers.ModelStoreController import store_model_blueprint
 from backend.controllers.OpenAIController import openai_blueprint
 from backend.controllers.GeminiController import gemini_blueprint
 from backend.setup.setup_env import setup_env

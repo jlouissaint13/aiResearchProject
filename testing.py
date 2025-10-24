@@ -34,9 +34,7 @@ if __name__ == '__main__':
                     pass
                 case 3:
                     with app.app_context():
-                        resp = list_gemini_models()
-                        data = json.loads(resp.get_data(as_text=True))
-                        print(data)
+
                         resp = list_openai_models()
                         data = json.loads(resp.get_data(as_text=True))
                         print(data)

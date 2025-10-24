@@ -3,12 +3,10 @@ import {
     Box, Typography, Button, TextField, Divider, List, ListItem,
     ListItemText, ListItemIcon, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio,
     Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Tooltip,
-    Select, MenuItem, InputLabel // Added Select, MenuItem, InputLabel
+    Select, MenuItem, InputLabel
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SettingsIcon from '@mui/icons-material/Settings';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DnsIcon from '@mui/icons-material/Dns';
 import { useNavigate } from "react-router-dom";
 
 const initialModels = [
@@ -17,7 +15,7 @@ const initialModels = [
     { id: 'claude-3-opus', name: 'Claude 3 Opus' },
 ];
 const initialDefaultModel = 'gemini-2.5-flash';
-const initialPromptType = 'deep-research'; 
+const initialPromptType = 'deep-research';
 
 const textFieldStyle = {
     '& .MuiOutlinedInput-root': {
@@ -91,7 +89,7 @@ const Settings = () => {
 
     const [models, setModels] = useState(initialModels);
     const [defaultModel, setDefaultModel] = useState(initialDefaultModel);
-    
+
     const [promptType, setPromptType] = useState(initialPromptType);
 
     const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
@@ -320,16 +318,6 @@ const Settings = () => {
         alert('Model and prompt settings saved!');
     };
 
-    // @ts-ignore
-    const handleDeleteModel = (modelIdToDelete) => {
-        const updatedModels = models.filter(model => model.id !== modelIdToDelete);
-        setModels(updatedModels);
-
-        if (defaultModel === modelIdToDelete) {
-            setDefaultModel(updatedModels.length > 0 ? updatedModels[0].id : '');
-        }
-    };
-
     const handleDeleteAccountClick = () => {
 
 
@@ -462,17 +450,17 @@ const Settings = () => {
                 </Box>
 
                 <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
-                
+
                 {/* --- MODIFIED SECTION --- */}
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
                     <Typography variant="h6" sx={{ color: '#1a73e8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, mb: -1 }}>
                         Model & Prompt Settings
                     </Typography>
                     <Box sx={{ p: 3, border: '1px solid #3e4042', borderRadius: 1, bgcolor: '#282a2e', display: 'flex', flexDirection: 'column', gap: 3 }}>
-                        
+
                         {/* New Dropdown for Default Model */}
                         <FormControl fullWidth variant="outlined">
-                            <InputLabel 
+                            <InputLabel
                                 id="default-model-select-label"
                                 sx={{
                                     color: '#8e8e8e',
@@ -517,8 +505,8 @@ const Settings = () => {
                                 }}
                             >
                                 {models.map((model) => (
-                                    <MenuItem 
-                                        key={model.id} 
+                                    <MenuItem
+                                        key={model.id}
                                         value={model.id}
                                         sx={{
                                             '&:hover': { bgcolor: 'rgba(255, 255, 255, 0.08)' },
@@ -561,7 +549,7 @@ const Settings = () => {
                                 </Tooltip>
                             </RadioGroup>
                         </FormControl>
-                        
+
                         <Button fullWidth variant="contained" onClick={handleSaveConfiguration} sx={primaryButtonStyle}>
                             Save Configuration
                         </Button>
@@ -569,67 +557,6 @@ const Settings = () => {
                 </Box>
                 {/* --- END OF MODIFIED SECTION --- */}
 
-
-                <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
-
-                <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
-                    <Typography variant="h6" sx={{ color: '#1a73e8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, mb: -1 }}>
-                        Model Manager
-                    </Typography>
-                    <Box sx={{ p: 3, border: '1px solid #3e4042', borderRadius: 1, bgcolor: '#282a2e' }}>
-                        <Typography variant="body2" sx={{ color: '#8e8e8e', mb: 2 }}>
-                            View and remove available models from the application.
-                        </Typography>
-                        <List>
-                            {models.length > 0 ? (
-                                models.map((model) => (
-                                    <ListItem
-                                        key={model.id}
-                                        sx={{
-                                            bgcolor: '#282a2e',
-                                            borderRadius: 1,
-                                            mb: 1.5,
-                                            transition: 'background-color 0.3s',
-                                            border: '1px solid #3e4042',
-                                            '&:hover': {
-                                                bgcolor: '#424549',
-                                                borderColor: '#1a73e8'
-                                            }
-                                        }}
-                                        secondaryAction={
-                                            <IconButton
-                                                onClick={() => handleDeleteModel(model.id)}
-                                                sx={{
-                                                    color: '#f44336',
-                                                    '&:hover': { bgcolor: 'rgba(244, 67, 54, 0.1)', color: '#ff7961' },
-                                                    '&:active': { bgcolor: 'transparent' },
-                                                    outline: 'none',
-                                                    '&:focus, &.Mui-focusVisible': {
-                                                        bgcolor: 'transparent',
-                                                        boxShadow: 'none',
-                                                        outline: 'none'
-                                                    }
-                                                }}
-                                                disableRipple
-                                                disableFocusRipple
-                                                disableTouchRipple
-                                            >
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        }
-                                    >
-                                        <ListItemIcon sx={{ color: '#1a73e8', minWidth: '40px' }}><DnsIcon /></ListItemIcon>
-                                        <ListItemText primary={model.name} primaryTypographyProps={{ color: '#e0e0e0', fontWeight: '500' }} />
-                                    </ListItem>
-                                ))
-                            ) : (
-                                <Typography sx={{ textAlign: 'center', color: '#8e8e8e', fontStyle: 'italic', mt: 2 }}>
-                                    No models available.
-                                </Typography>
-                            )}
-                        </List>
-                    </Box>
-                </Box>
 
                 <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
 

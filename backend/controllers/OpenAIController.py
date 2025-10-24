@@ -1,18 +1,23 @@
 from flask import Blueprint, jsonify
 from openai import OpenAI
 import os
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-load_dotenv()
 
 openai_blueprint = Blueprint("openai_controller", __name__)
-OPENAI_KEY = os.getenv("OPENAI_API_KEY")
+
 
 @openai_blueprint.route("/models", methods=["GET"])
 def list_openai_models():
 
+
+    env_path = find_dotenv()
+    load_dotenv(env_path, override=True)
+    OPENAI_KEY = os.getenv("OPENAI_API_KEY")
+
+
     if OPENAI_KEY is None:
-        return jsonify({"key has not been entered yet"}), 400
+        return "chatgpt not active" , 404
 
     client = OpenAI(api_key=OPENAI_KEY)
 

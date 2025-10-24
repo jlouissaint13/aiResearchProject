@@ -7,50 +7,39 @@ class StoreModelRepository:
         self.db_path = 'sql.db'
     
     
-    def store_model(self,provider,key_name,api_key):
+    def store_model(self,provider,key_name):
         con = sqlite3.connect(self.db_path)
         cur = con.cursor()
-        if self.api_key_exists(api_key):
-            return
-
-
-        cur.execute(
-            "Insert into STOREDMODELS(provider,key_name,api_key) VALUES (?,?,?)",
-            (provider,key_name,api_key)
+        if self.api_key_exists(provider):
+            cur.execute(
+            "UPDATE STOREKEYNAME SET key_name = ? WHERE provider = ?",
+            (key_name, provider)  
         )
+        else:    
+                 cur.execute(
+            "Insert into STOREKEYNAME(provider,key_name) VALUES (?,?)",
+            (provider,key_name)
+        )
+
+       
         
         con.commit()
         con.close()
         
         
-    def api_key_exists(self,api_key):
+    def api_key_exists(self,provider):
         con = sqlite3.connect(self.db_path)
         cur = con.cursor()
         
-        cur.execute("select api_key from STOREDMODELS where api_key = ?",(api_key,))
+        cur.execute("select provider from STOREKEYNAME where provider = ?",(provider,))
         
         res = cur.fetchone()
         
-        
+        con.close()
         if res is None:
             return False
         
+        
+
         return True
 
-
-    def update_api_key(self, old_api_key, new_api_key):
-        con = sqlite3.connect(self.db_path)
-        cur = con.cursor()
-
-    
-        cur.execute("SELECT api_key FROM STOREDMODELS WHERE api_key = ?", (old_api_key,))
-        if cur.fetchone() is None:
-            con.close()
-            return False
-
-        cur.execute("UPDATE STOREDMODELS SET api_key = ? WHERE api_key = ?", (new_api_key, old_api_key))
-        con.commit()
-        con.close()
-        return True
-        
-        
