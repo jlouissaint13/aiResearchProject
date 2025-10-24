@@ -53,7 +53,6 @@ const modalSelectStyles = {
 const providers = [
     { id: 'openai', name: 'OpenAI' },
     { id: 'gemini', name: 'Gemini' },
-    { id: 'deepseek', name: 'DeepSeek' },
 ];
 
 const ApiKeyInput = () => {
