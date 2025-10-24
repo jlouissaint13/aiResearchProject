@@ -7,10 +7,15 @@ load_dotenv()
 
 gemini_blueprint = Blueprint("gemini_controller", __name__)
 GEMINI_KEY = os.getenv("GOOGLE_API_KEY")
-genai.configure(api_key=GEMINI_KEY)
+
 
 @gemini_blueprint.route("/gemini-models", methods=["GET"])
 def list_gemini_models():
+    
+    if GEMINI_KEY is None:
+        return jsonify({"error": str("error")}), 500
+    genai.configure(api_key=GEMINI_KEY)
+    
     try:
         all_models = genai.list_models()
         main_models = [

@@ -7,10 +7,16 @@ load_dotenv()
 
 openai_blueprint = Blueprint("openai_controller", __name__)
 OPENAI_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_KEY)
 
 @openai_blueprint.route("/models", methods=["GET"])
 def list_openai_models():
+
+    if OPENAI_KEY is None:
+        return jsonify({"key has not been entered yet"}), 400
+
+    client = OpenAI(api_key=OPENAI_KEY)
+
+
     try:
         response = client.models.list()
         allowed_models = {
