@@ -10,8 +10,6 @@ from backend.controllers.UserSettingsController import user_settings_blueprint
 from backend.controllers.PDFManagerController import pdf_blueprint
 from backend.controllers.ModelSettingsController import model_settings_blueprint
 from backend.controllers.ModelStoreController import store_model_blueprint
-from backend.controllers.OpenAIController import openai_blueprint
-from backend.controllers.GeminiController import gemini_blueprint
 from backend.setup.setup_env import setup_env
 app = Flask(__name__)
 
@@ -29,9 +27,7 @@ app.register_blueprint(model_settings_blueprint,url_prefix="/model_settings")
 
 app.register_blueprint(store_model_blueprint,url_prefix="/store_model")
 
-app.register_blueprint(openai_blueprint,url_prefix="/open_ai_api")
 
-app.register_blueprint(gemini_blueprint,url_prefix="/gemini_api")
 CORS(app,origins="*")
 
 if __name__ == '__main__':

@@ -423,31 +423,37 @@ const ChatBot = () => {
                         </IconButton>
                     </Box>
 
-                    <TextField
-                        fullWidth
-                        variant="outlined"
-                        label="Search conversations..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        disabled={isLoading}
-                        InputProps={{
-                            startAdornment: (
-                                <SearchIcon sx={{ color: '#8e8e8e', mr: 1 }} />
-                            ),
-                        }}
-                        sx={{
-                            '& .MuiOutlinedInput-root': {
-                                borderRadius: 1,
-                                bgcolor: '#282a2e',
-                                '& fieldset': { borderColor: '#3e4042' },
-                                '&:hover fieldset': { borderColor: '#5e6062' },
-                                '&.Mui-focused fieldset': { borderColor: '#1a73e8', borderWidth: '2px' },
-                            },
-                            '& .MuiInputBase-input': { color: '#e0e0e0' },
-                            '& .MuiInputLabel-root': { color: '#8e8e8e' },
-                            '& .MuiInputLabel-root.Mui-focused': { color: '#1a73e8' },
-                        }}
-                    />
+                    {isLoggedIn && (
+
+                        <TextField
+                            fullWidth
+                            variant="outlined"
+                            label="Search conversations..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            disabled={isLoading}
+
+                            InputProps={{
+                                startAdornment: (
+                                    <SearchIcon sx={{ color: '#8e8e8e', mr: 1 }} />
+
+                                ),
+                            }}
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: 1,
+                                    bgcolor: '#282a2e',
+                                    '& fieldset': { borderColor: '#3e4042' },
+                                    '&:hover fieldset': { borderColor: '#5e6062' },
+                                    '&.Mui-focused fieldset': { borderColor: '#1a73e8', borderWidth: '2px' },
+                                },
+                                '& .MuiInputBase-input': { color: '#e0e0e0' },
+                                '& .MuiInputLabel-root': { color: '#8e8e8e' },
+                                '& .MuiInputLabel-root.Mui-focused': { color: '#1a73e8' },
+                            }}
+                        />
+
+                    )}
                 </Box>
 
                 <Box sx={{ flexGrow: 1, overflowY: 'auto', pr: 1, mr: -1, minHeight: 0 }}>
@@ -495,7 +501,7 @@ const ChatBot = () => {
                     <Divider sx={{ mb: 1, bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                         {[
-                            { text: 'New Conversation', icon: <CreateIcon />, handler: handleNewChat, visible: true },
+                            { text: 'New Conversation', icon: <CreateIcon />, handler: handleNewChat, visible: isLoggedIn },
                             { text: 'Settings', icon: <SettingsIcon />, handler: handleSettingsClick, visible: isLoggedIn },
                             { text: 'Exit', icon: <ExitToAppIcon />, handler: handleGoBack, visible: true }
                         ].map((item) => item.visible && (

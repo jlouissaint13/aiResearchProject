@@ -3,7 +3,6 @@ import time
 from backend.repository.ChromaRepository import ChromaRepository
 from backend.setup.Startup import Startup
 from backend.controllers.GeminiController import list_gemini_models
-from backend.controllers.OpenAIController import list_openai_models
 from app import app
 from flask import json
 chroma = ChromaRepository()
@@ -33,11 +32,7 @@ if __name__ == '__main__':
                 case 2:
                     pass
                 case 3:
-                    with app.app_context():
-
-                        resp = list_openai_models()
-                        data = json.loads(resp.get_data(as_text=True))
-                        print(data)
+                    pass
                         
                         
                 case 5:
