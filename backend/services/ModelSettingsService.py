@@ -7,9 +7,32 @@ class ModelSettingsService:
         self.model_repository = ModelSettingsRepository()
     
     
-    def change_settings(self,active_model,prompt_type,user_id):
-        self.model_repository.change_settings_by_user_id(active_model,prompt_type,user_id)
+    def change_settings(self,active_model,prompt_type,provider,user_id):
+        self.model_repository.change_settings_by_user_id(active_model,prompt_type,provider,user_id)
         
         
     def delete_user(self,user_id):
-        self.model_repository.delete_user_by_id(user_id)
+        self.model_repository.delete_settings_by_id(user_id)
+
+
+    def retrieve_user_settings(self,user_id):
+
+
+       tupleReturned =  self.model_repository.retrieve_user_settings_by_user_id(user_id)
+       if tupleReturned is None:
+           return None
+
+       model_settings = { "activeModel" : tupleReturned[0],
+                   "promptType" : tupleReturned[1],
+                   "provider" : tupleReturned[2]
+       }
+       return model_settings
+
+    def llama_model(self):
+        list = [{
+            "id": "llama3.2",
+            "name": "Llama 3.2",
+            "provider": "meta"
+        }]
+
+        return list

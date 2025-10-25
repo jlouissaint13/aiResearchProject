@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Box, Button, Typography, TextField, IconButton, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Divider } from '@mui/material';
+import { Box, Button, Typography, TextField, IconButton, Divider } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
@@ -20,13 +20,6 @@ const LOADING_MESSAGES = [
     "Finalizing everything for you..."
 ];
 
-const AVAILABLE_MODELS = [
-    { name: "Gemini 2.5 Flash", id: "gemini-2.5" },
-    {name: "LLAMA3.2B", id: "llama3.2b"}
-
-];
-
-
 const ChatBot = () => {
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [input, setInput] = useState('');
@@ -38,7 +31,6 @@ const ChatBot = () => {
     const [valueLoadingMessage,setValueLoadingMessage] = useState<number>(0)
     const valueRef = useRef(0)
     const navigate = useNavigate();
-    const [selectedModel, setSelectedModel] = useState(AVAILABLE_MODELS[0].id);
     const [isLoggedIn,setIsLoggedIn] = useState<boolean>()
     const [searchTerm, setSearchTerm] = useState('');
 
@@ -277,11 +269,6 @@ const ChatBot = () => {
         }
     }, [messages]);
 
-    const handleModelChange = (event: SelectChangeEvent<string>) => {
-        setSelectedModel(event.target.value as string);
-        console.log(`Chat model set to: ${AVAILABLE_MODELS.find(m => m.id === event.target.value)?.name}`);
-    };
-
     const handleCopy = async (text: string) => {
         try {
             await navigator.clipboard.writeText(text);
@@ -435,50 +422,6 @@ const ChatBot = () => {
                             <CloseIcon />
                         </IconButton>
                     </Box>
-
-                    <FormControl fullWidth variant="outlined">
-                        <InputLabel id="model-select-label" sx={{ color: '#8e8e8e', '&.Mui-focused': { color: '#1a73e8' } }}>Select Model</InputLabel>
-                        <Select
-                            labelId="model-select-label"
-                            value={selectedModel}
-                            onChange={handleModelChange}
-                            label="Select Model"
-                            disabled={isLoading}
-                            sx={{
-                                color: '#e0e0e0',
-                                borderRadius: 1,
-                                bgcolor: '#282a2e',
-                                '& .MuiOutlinedInput-notchedOutline': { borderColor: '#3e4042' },
-                                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#5e6062' },
-                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#1a73e8', borderWidth: '2px' },
-                                '.MuiSvgIcon-root': { color: '#8e8e8e' }
-                            }}
-                            MenuProps={{
-                                PaperProps: {
-                                    sx: {
-                                        bgcolor: '#282a2e',
-                                        borderRadius: 1,
-                                        border: '1px solid #3e4042',
-                                        color: '#e0e0e0',
-                                    },
-                                },
-                            }}
-                        >
-                            {AVAILABLE_MODELS.map((model) => (
-                                <MenuItem
-                                    key={model.id}
-                                    value={model.id}
-                                    sx={{
-                                        color: '#e0e0e0',
-                                        '&:hover': { bgcolor: '#424549' },
-                                        '&.Mui-selected': { bgcolor: '#1a73e8', color: '#fff', '&:hover': { bgcolor: '#1565c0' } }
-                                    }}
-                                >
-                                    {model.name}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
 
                     <TextField
                         fullWidth
@@ -643,9 +586,9 @@ const ChatBot = () => {
                     ) : (
                         messages.map((msg, index) => (
                             <Box key={msg.id} sx={{ display: 'flex', justifyContent: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
-                                
+
                                 <Box sx={{ display: 'flex', flexDirection: 'column', maxWidth: '80%', alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start' }}>
-                                    
+
                                     <Box
                                         sx={{
                                             p: 1.5,
@@ -658,7 +601,7 @@ const ChatBot = () => {
                                         <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap', fontWeight: 500 }}>{msg.content}</Typography>
                                     </Box>
 
-                                    
+
                                     {index === messages.length - 1 && (
                                         <IconButton
                                             size="small"

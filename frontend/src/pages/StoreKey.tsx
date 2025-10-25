@@ -10,7 +10,6 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    // --- New Imports ---
     Select,
     MenuItem,
     FormControl,
@@ -21,7 +20,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-// This is a helper object for the TextFields inside the modal
 const modalTextFieldStyles = {
     '& .MuiOutlinedInput-root': {
         borderRadius: 1,
@@ -75,7 +73,6 @@ const ApiKeyInput = () => {
     };
 
     async function handleFinalSave() {
-        alert(`Saving:\nProvider: ${provider}\nName: ${keyName}\nKey: ${apiKey.substring(0, 10)}...`);
 
 
         const data = {

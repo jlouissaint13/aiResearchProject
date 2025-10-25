@@ -28,7 +28,7 @@ class GeminiService:
         GEMINI_KEY = os.getenv("GOOGLE_API_KEY")
         #fix redundancy here later
         if not self.valid_key(GEMINI_KEY):
-            return
+            return []
         all_models = []
         allowed_models = [
             "models/gemini-pro-latest",

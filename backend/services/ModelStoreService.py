@@ -20,7 +20,8 @@ class ModelStoreService:
 
         if provider == "openai":
             env_target = "OPENAI_API_KEY"
-        else: env_target = "GOOGLE_API_KEY"
+        elif provider == "gemini":
+            env_target = "GOOGLE_API_KEY"
 
         set_key(ENV_PATH, env_target, api_key)
 

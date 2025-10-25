@@ -4,46 +4,43 @@ import sqlite3
 class ModelSettingsRepository:
     def __init__(self):
         self.db_path = "sql.db"
-        
+
+
+
+    def change_settings_by_user_id(self, active_model, prompt_type,provider,user_id):
+
+
+        sql = """
+        INSERT OR REPLACE INTO MODELSETTINGS 
+            (active_model, prompt_type,current_provider,user_id) 
+        VALUES 
+            (?, ?, ?,?)
+        """
+
+        try:
+            with sqlite3.connect(self.db_path) as con:
+                con.execute(sql, (active_model, prompt_type,provider, user_id))
+        except sqlite3.Error as e:
+            print(e)
     
-    
-    def change_settings_by_user_id(self,active_model,prompt_type,user_id):
+    def retrieve_user_settings_by_user_id(self,user_id):
         con = sqlite3.connect(self.db_path)
         cur = con.cursor()
-        
-        if self.user_exists(user_id):
-            cur.execute(
-                "UPDATE model_settings SET active_model = ?, prompt_type = ? WHERE user_id = ?",
-                (active_model, prompt_type, user_id)
-            )
-            con.commit()
-            con.close()
 
 
-        cur.execute(
-            "INSERT INTO model_settings (active_model, prompt_type, user_id) VALUES (?, ?, ?)",
-            (active_model, prompt_type, user_id)
-        )
-        con.commit()
+        cur.execute("Select active_model,prompt_type,current_provider from MODELSETTINGS where user_id = ?",(user_id,))
+
+        res = cur.fetchone()
         con.close()
-    
-    
-    def user_exists(self,user_id):
-        con = sqlite3.connect(self.db_path)
-        cur = con.cursor()
-        
-        res = cur.execute("select user_id from model_settings where user_id = ?",(user_id,))
-        
-        res = res.fetchone()
-        
-        if res is None:
-            return False
-        
-        return True
+        if res is not None:
+            return res
+        else:
+            return None
+
         
         
-        
-    def delete_user_by_id(self,user_id):
+     #probably don't need this one
+    def delete_settings_by_id(self,user_id):
         con = sqlite3.connect(self.db_path)
         cur = con.cursor()
         

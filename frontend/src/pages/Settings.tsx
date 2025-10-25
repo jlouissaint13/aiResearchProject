@@ -1,19 +1,19 @@
 import {useEffect, useState} from 'react';
 import {
-    Box, Typography, Button, TextField, Divider, List, ListItem,
-    ListItemText, ListItemIcon, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio,
-    Dialog, DialogTitle, DialogContent, DialogActions, IconButton, Tooltip,
-    Select, MenuItem, InputLabel
+    Box, Typography, Button, TextField, Divider, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio,
+    Dialog, DialogTitle, DialogContent, DialogActions, Tooltip,
+    Select, MenuItem, InputLabel, LinearProgress
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const initialModels = [
-    { id: 'gemini-2.5-flash', name: 'Gemini 2.5 Flash' },
-    { id: 'gemini-2.5-pro', name: 'Gemini 2.5 Pro' },
-    { id: 'claude-3-opus', name: 'Claude 3 Opus' },
+    { id: '', name: '', provider: '' },
 ];
+
+
 const initialDefaultModel = 'gemini-2.5-flash';
 const initialPromptType = 'deep-research';
 
@@ -57,6 +57,13 @@ const primaryButtonStyle = {
         transform: 'translateY(-1px)',
         boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
     },
+    '&:disabled': {
+        bgcolor: '#3e4042',
+        color: '#8e8e8e',
+        transform: 'none',
+        boxShadow: 'none',
+        cursor: 'not-allowed',
+    }
 };
 
 const deleteButtonStyle = {
@@ -67,6 +74,13 @@ const deleteButtonStyle = {
         transform: 'translateY(-1px)',
         boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
     },
+    '&:disabled': {
+        bgcolor: '#3e4042',
+        color: '#8e8e8e',
+        transform: 'none',
+        boxShadow: 'none',
+        cursor: 'not-allowed',
+    }
 };
 
 const promptDescriptions = {
@@ -74,7 +88,6 @@ const promptDescriptions = {
     'creative': 'Generates a thoughtful and imaginative response. It connects ideas, draws new insights, and explores different angles based on the text.',
     'short-and-sweet': 'Delivers a concise, clear, and direct answer. It\'s accurate and gets right to the point, avoiding any filler.'
 };
-
 
 const Settings = () => {
     const [username, setUsername] = useState('');
@@ -100,6 +113,8 @@ const Settings = () => {
     const [emailError, setEmailError] = useState(false);
     const [invalidEmail, setInvalidEmail] = useState(false);
 
+    const [isLoading, setIsLoading] = useState(true);
+
     const handleBack = () => {
         if (sessionStorage.getItem("lastPage") === "chatbot") {
             sessionStorage.clear();
@@ -111,9 +126,7 @@ const Settings = () => {
     };
 
 
-    useEffect(() => {
-        getUserInfo()
-    },[]);
+
 
     async function getUserInfo() : Promise<void> {
         const data = {
@@ -143,7 +156,7 @@ const Settings = () => {
             alert(error)
         }
     }
-    //add regex later
+
     const isEmailValid = (email:string): boolean => {
         return email.includes('@') && email.includes('.com');
     }
@@ -301,6 +314,60 @@ const Settings = () => {
         }
     }
 
+
+    // @ts-ignore
+    async function retrieveUserSettings(setDefaultModel, setPromptType) {
+        const userId : string | null = localStorage.getItem("userID");
+
+
+        try {
+            const response = await axios.post('http://localhost:8000/model_settings/retrieve_settings', {
+                user_id: userId
+            });
+
+            if (response.status === 200 && response.data) {
+                const modelSettings = response.data;
+                if (modelSettings.activeModel) {
+                    setDefaultModel(modelSettings.activeModel);
+                }
+                if (modelSettings.promptType) {
+                    setPromptType(modelSettings.promptType);
+                }
+            } else if (response.status === 404) {
+                return
+            }
+        } catch (error : any) {
+            if (error.response && error.response.status === 404) {
+
+            } else {
+                console.error("An error occurred while retrieving user settings:", error);
+            }
+        }
+    }
+
+    useEffect(() =>  {
+        const loadData = async () => {
+            setIsLoading(true);
+            try {
+                await Promise.all([
+                    retrieveModels(),
+                    retrieveUserSettings(setDefaultModel, setPromptType),
+                    getUserInfo()
+                ]);
+            } catch (error) {
+                console.error("Failed to load initial data:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadData();
+    }, []);
+
+
+
+
+
     const handleCloseDialog = () => {
         setIsPasswordDialogOpen(false);
         setPasswordConfirm('');
@@ -312,11 +379,45 @@ const Settings = () => {
     };
 
 
-    // Updated save handler
-    const handleSaveConfiguration = () => {
-        console.log('Saving Configuration:', { defaultModel, promptType });
-        alert('Model and prompt settings saved!');
-    };
+    async function handleSaveConfiguration(): Promise<void> {
+        const selectedModelObject = models.find(model => model.id === defaultModel)
+        const provider = selectedModelObject?.provider;
+        const data = {
+            user_id : localStorage.getItem("userID"),
+            prompt_type : promptType,
+            active_model: defaultModel,
+            provider : provider
+
+        }
+        try {
+            const response = await axios.post("http://localhost:8000/model_settings/save_model_settings",data)
+
+            if (response.status === 200) {
+                alert("Model Settings Saved")
+            }
+
+        }catch (error) {
+            alert(error)
+        }
+
+    }
+
+
+
+    async function retrieveModels() : Promise<void> {
+        try {
+            const response = await axios.get('http://localhost:8000/model_settings/retrieve_models');
+            const fetchedModels = response.data;
+            if (response.status === 200) {
+                setModels(fetchedModels);
+            }
+
+        } catch (error) {
+            alert(error)
+            setModels([]);
+        }
+    }
+
 
     const handleDeleteAccountClick = () => {
 
@@ -372,6 +473,7 @@ const Settings = () => {
 
             <Box
                 sx={{
+                    position: 'relative',
                     p: { xs: 4, md: 5 },
                     bgcolor: 'rgba(30, 32, 35, 0.98)',
                     backdropFilter: 'blur(8px)',
@@ -388,6 +490,20 @@ const Settings = () => {
                     mb: 4,
                 }}
             >
+                {isLoading && (
+                    <LinearProgress
+                        sx={{
+                            width: '100%',
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            bgcolor: 'transparent',
+                            '& .MuiLinearProgress-bar': {
+                                bgcolor: '#1a73e8'
+                            }
+                        }}
+                    />
+                )}
                 <Typography
                     variant="h5"
                     component="h1"
@@ -421,6 +537,7 @@ const Settings = () => {
                         error={usernameError}
                         helperText={usernameError ? "Username cannot be empty." : ""}
                         sx={textFieldStyle}
+                        disabled={isLoading}
                     />
                     <TextField
                         fullWidth
@@ -442,24 +559,25 @@ const Settings = () => {
                                     ""
                         }
                         sx={textFieldStyle}
+                        disabled={isLoading}
                     />
-                    <TextField fullWidth variant="outlined" label="New Password (Leave Blank to Keep Current)" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} sx={textFieldStyle} />
-                    <Button fullWidth variant="contained" onClick={handleSaveGeneral} sx={primaryButtonStyle}>
+                    <TextField fullWidth variant="outlined" label="New Password (Leave Blank to Keep Current)" type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} sx={textFieldStyle} disabled={isLoading} />
+                    <Button fullWidth variant="contained" onClick={handleSaveGeneral} sx={primaryButtonStyle} disabled={isLoading}>
                         Save User Settings
                     </Button>
                 </Box>
 
                 <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
 
-                {/* --- MODIFIED SECTION --- */}
+
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
                     <Typography variant="h6" sx={{ color: '#1a73e8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5, mb: -1 }}>
                         Model & Prompt Settings
                     </Typography>
                     <Box sx={{ p: 3, border: '1px solid #3e4042', borderRadius: 1, bgcolor: '#282a2e', display: 'flex', flexDirection: 'column', gap: 3 }}>
 
-                        {/* New Dropdown for Default Model */}
-                        <FormControl fullWidth variant="outlined">
+
+                        <FormControl fullWidth variant="outlined" disabled={isLoading}>
                             <InputLabel
                                 id="default-model-select-label"
                                 sx={{
@@ -490,8 +608,18 @@ const Settings = () => {
                                         borderColor: '#1a73e8',
                                         borderWidth: '2px',
                                     },
-                                    '& .MuiSvgIcon-root': { // Style the dropdown arrow
+                                    '& .MuiSvgIcon-root': {
                                         color: '#8e8e8e',
+                                    },
+                                    '&.Mui-disabled': {
+                                        color: '#8e8e8e',
+                                        bgcolor: '#282a2e',
+                                    },
+                                    '&.Mui-disabled .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: '#3e4042',
+                                    },
+                                    '&.Mui-disabled .MuiSvgIcon-root': {
+                                        color: '#3e4042',
                                     },
                                 }}
                                 MenuProps={{
@@ -514,7 +642,7 @@ const Settings = () => {
                                             '&.Mui-selected:hover': { bgcolor: 'rgba(26, 115, 232, 0.3)' },
                                         }}
                                     >
-                                        {model.name}
+                                        {model.name.toUpperCase()}
                                     </MenuItem>
                                 ))}
                             </Select>
@@ -522,8 +650,8 @@ const Settings = () => {
 
                         <Divider sx={{ my: 1, bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
 
-                        {/* Prompt Settings Section */}
-                        <FormControl component="fieldset">
+
+                        <FormControl component="fieldset" disabled={isLoading}>
                             <FormLabel component="legend" sx={{ color: '#8e8e8e', mb: 1, '&.Mui-focused': { color: '#8e8e8e' } }}>Prompt Type</FormLabel>
                             <RadioGroup value={promptType} onChange={(e) => setPromptType(e.target.value)}>
                                 <Tooltip title={promptDescriptions['deep-research']} placement="right">
@@ -550,12 +678,12 @@ const Settings = () => {
                             </RadioGroup>
                         </FormControl>
 
-                        <Button fullWidth variant="contained" onClick={handleSaveConfiguration} sx={primaryButtonStyle}>
+                        <Button fullWidth variant="contained" onClick={handleSaveConfiguration} sx={primaryButtonStyle} disabled={isLoading}>
                             Save Configuration
                         </Button>
                     </Box>
                 </Box>
-                {/* --- END OF MODIFIED SECTION --- */}
+
 
 
                 <Divider sx={{ width: '100%', bgcolor: 'rgba(255, 255, 255, 0.08)' }} />
@@ -573,6 +701,7 @@ const Settings = () => {
                             variant="contained"
                             onClick={handleDeleteAccountClick}
                             sx={deleteButtonStyle}
+                            disabled={isLoading}
                         >
                             Delete Account
                         </Button>

@@ -1,6 +1,8 @@
 
 from sentence_transformers import SentenceTransformer
 from langchain_ollama.llms import OllamaLLM
+from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from backend.repository.ChromaRepository import ChromaRepository
 from configuration.RagConfiguration import RagConfiguration
@@ -41,7 +43,21 @@ class RagService:
     def model_run(self):
         model = OllamaLLM(model=RagConfiguration.LLM_MODEL)
 
-        chain = RagService.prompt_builder() | model
+        match self.provider:
+            case 'openai':
+                model = ChatOpenAI(model=self.active_model)
+                print("openai used")
+
+            case 'gemini':
+                model = ChatGoogleGenerativeAI(model=self.active_model)
+                print("gemini used")
+
+            case 'meta':
+                model = OllamaLLM(model=self.active_model)
+                print("llama used")
+
+
+        chain = RagService.prompt_builder(self.prompt_type) | model
         
         if self.context_Text() == "":
             return "Please insert a PDF I don't have any data to reference."
@@ -53,16 +69,65 @@ class RagService:
             "context": self.context_Text()
         })
     
-    def response(self,text,user_id):
+    def response(self,text,active_model,prompt_type,provider,user_id):
         self.query = text
         self.user_id = user_id
+        self.active_model = active_model
+        self.prompt_type = prompt_type
+        self.provider = provider
         answer = self.model_run()
         print(answer)
         return answer
 
     @staticmethod
-    def prompt_builder():
-        template = """
+    def prompt_builder(prompt_type):
+        template = get_research_prompt(prompt_type)
+
+        return ChatPromptTemplate.from_template(template)
+
+
+
+
+
+
+
+def get_research_prompt(mode):
+    if mode == "deep-research":
+        return """
+You are a **Research Analyst**.
+
+Your job is to produce a thorough, structured, and deeply reasoned response using only the information provided in the CONTEXT.
+Use clear logic, reference multiple parts of the text, and explain relationships or causes where relevant.
+
+If data is missing, acknowledge it — do not invent details.
+
+CONTEXT:
+{context}
+
+QUESTION:
+{query}
+
+RESPONSE:
+"""
+
+    elif mode == "short-and-sweet":
+        return """
+You are a **Concise Research Assistant**.
+
+Answer the QUESTION briefly and clearly using only the CONTEXT.
+Focus on accuracy and brevity. Avoid speculation, repetition, or filler phrases.
+
+CONTEXT:
+{context}
+
+QUESTION:
+{query}
+
+RESPONSE:
+"""
+
+    elif mode == "creative":
+        return """
 You are a **Creative Analyst**.
 
 Draw insights, connections, or analogies from the CONTEXT to provide a thoughtful, imaginative, and engaging response.
@@ -77,9 +142,24 @@ QUESTION:
 
 RESPONSE:
 """
-        return ChatPromptTemplate.from_template(template)
 
+#if blank just return deep
+    else:
+       return """
+You are a **Research Analyst**.
 
+Your job is to produce a thorough, structured, and deeply reasoned response using only the information provided in the CONTEXT.
+Use clear logic, reference multiple parts of the text, and explain relationships or causes where relevant.
 
+If data is missing, acknowledge it — do not invent details.
+
+CONTEXT:
+{context}
+
+QUESTION:
+{query}
+
+RESPONSE:
+"""
 
 

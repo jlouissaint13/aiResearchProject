@@ -25,7 +25,7 @@ class OpenAIService:
         OPENAI_KEY = os.getenv("OPENAI_API_KEY")
         all_models = []
         if not self.valid_key(OPENAI_KEY):
-            return
+            return []
         allowed_models_gpt = {
             "gpt-3.5-turbo",
             "gpt-3.5-turbo-16k",
