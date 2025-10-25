@@ -121,6 +121,11 @@ const Settings = () => {
             navigate("/Chatbot");
             return;
         }
+        else if (sessionStorage.getItem("lastPage") === "chatbotTemporary") {
+            sessionStorage.clear()
+            navigate("/chatbotTemp")
+            return;
+        }
 
         navigate("/Choice");
     };

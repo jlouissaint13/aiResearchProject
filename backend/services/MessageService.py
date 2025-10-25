@@ -25,15 +25,18 @@ class MessageService:
        
     def send_model_message(self, conversation_id,user_id,user_content,logged_in):
         model_message_id = str(uuid.uuid4())
-        
-        
         role = 'model'
-        
-        current_user_settings = self.model_settings.retrieve_user_settings(user_id)
-        active_model = current_user_settings.get("activeModel")
-        prompt_type = current_user_settings.get("prompt_type")
-        provider = current_user_settings.get("provider")
 
+
+        if logged_in == 'true':
+            current_user_settings = self.model_settings.retrieve_user_settings(user_id)
+            active_model = current_user_settings.get("activeModel")
+            prompt_type = current_user_settings.get("prompt_type")
+            provider = current_user_settings.get("provider")
+        else:
+            active_model = "llama3.2"
+            prompt_type = "deep-research"
+            provider = "meta"
 
 
 

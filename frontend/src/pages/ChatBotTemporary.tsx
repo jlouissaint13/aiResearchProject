@@ -50,11 +50,14 @@ const ChatBot = () => {
         loginStatus()
     }, []);
     function loginStatus() : void {
+        /*
         if (localStorage.getItem("loggedIn") === "true") {
             setIsLoggedIn(true);
             return
         }
 
+
+         */
         setIsLoggedIn(false)
 
     }
@@ -269,7 +272,7 @@ const ChatBot = () => {
         }
     }, [messages]);
 
-    // Removed handleModelChange handler
+
 
     const handleCopy = async (text: string) => {
         try {
@@ -296,7 +299,7 @@ const ChatBot = () => {
             message_id: uuidv4(),
             user_id: localStorage.getItem("none"),
             conversation_id : sessionStorage.getItem("conversationID"),
-            logged_in : localStorage.getItem("loggedIn")
+            logged_in : 'false'
         };
 
 // @ts-ignore
@@ -344,7 +347,7 @@ const ChatBot = () => {
 
     const handleSettingsClick = () => {
         if (isLoading) return;
-        sessionStorage.setItem("lastPage", "chatbot");
+        sessionStorage.setItem("lastPage", "chatbotTemporary");
         navigate("/Settings");
     };
 
@@ -453,7 +456,7 @@ const ChatBot = () => {
                     ))}
                     {recentChats.length === 0 && (
                         <Typography sx={{ color: '#8e8e8e', textAlign: 'center', mt: 3, fontStyle: 'italic' }}>
-                            Conversation history is disabled while temporary mode is active.
+                            Chat history is off. This mode runs offline and won’t be saved after you close it.
                         </Typography>
                     )}
                 </Box>
