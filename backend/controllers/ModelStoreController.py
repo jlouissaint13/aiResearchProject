@@ -1,5 +1,4 @@
 from flask import jsonify,request,Blueprint
-from openai import OpenAI
 
 from backend.services.ModelStoreService import ModelStoreService
 
