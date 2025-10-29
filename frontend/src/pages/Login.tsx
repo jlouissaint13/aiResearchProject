@@ -302,8 +302,8 @@ const Login = () => {
                     Continue as Guest
                 </Button>
 
-                <Box sx={{ display: 'flex', gap: 2, mt: 1, alignItems: 'center', justifyContent: 'center' }}>
-                    <Link href="#" variant="body2" sx={{ color: '#8e8e8e', '&:hover': { color: '#e0e0e0', textDecoration: 'none' } }}>
+                <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: { xs: 1, sm: 2 }, mt: 1, alignItems: 'center' }}>
+                    <Link onClick={() => navigate("/reset-password")} href="#" variant="body2" sx={{ color: '#8e8e8e', '&:hover': { color: '#e0e0e0' } }}>
                         Forgot password?
                     </Link>
                     <Link onClick={register} href="#" variant="body2" sx={{ color: '#8e8e8e', '&:hover': { color: '#e0e0e0', textDecoration: 'none' } }}>

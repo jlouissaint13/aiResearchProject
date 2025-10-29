@@ -190,6 +190,7 @@ const ApiKeyInput = () => {
                     variant="outlined"
                     label="Enter your API Key here"
                     value={apiKey}
+                    type="password"
                     onChange={(e) => {
                         setApiKey(e.target.value);
                         setIsSaved(false);

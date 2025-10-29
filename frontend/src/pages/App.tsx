@@ -8,6 +8,9 @@ import StoreKey from "./StoreKey.tsx";
 import PDFManager from "./PDFManager.tsx";
 import Settings from "./Settings.tsx";
 import ChatBotTemporary from "./ChatBotTemporary.tsx";
+import ResetPasswordForm from "./PasswordResetForm.tsx";
+import VerifyCode from "./VerifyCode.tsx";
+import ResetPassword from "./ResetPassword.tsx";
 const App = () => (
     <div className="App">
         <BrowserRouter>
@@ -21,6 +24,9 @@ const App = () => (
                 <Route path="pdfManager" element={<PDFManager/>} />
                 <Route path="settings" element={<Settings/>} />
                 <Route path="chatbotTemp" element={<ChatBotTemporary/>}/>
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/verify-code" element={<VerifyCode />} />
+                <Route path="/reset-password-form" element={<ResetPasswordForm />} />
             </Routes>
         </BrowserRouter>
     </div>

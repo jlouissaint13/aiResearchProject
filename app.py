@@ -11,6 +11,7 @@ from backend.controllers.PDFManagerController import pdf_blueprint
 from backend.controllers.ModelSettingsController import model_settings_blueprint
 from backend.controllers.ModelStoreController import store_model_blueprint
 from backend.setup.setup_env import setup_env
+from backend.controllers.PasswordResetController import password_reset_blueprint
 app = Flask(__name__)
 
 
@@ -27,6 +28,7 @@ app.register_blueprint(model_settings_blueprint,url_prefix="/model_settings")
 
 app.register_blueprint(store_model_blueprint,url_prefix="/store_model")
 
+app.register_blueprint(password_reset_blueprint, url_prefix="/")
 
 CORS(app,origins="*")
 
