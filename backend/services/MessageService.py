@@ -31,7 +31,7 @@ class MessageService:
         if logged_in == 'true':
             current_user_settings = self.model_settings.retrieve_user_settings(user_id)
             active_model = current_user_settings.get("activeModel")
-            prompt_type = current_user_settings.get("prompt_type")
+            prompt_type = current_user_settings.get("promptType")
             provider = current_user_settings.get("provider")
         else:
             active_model = "llama3.2"

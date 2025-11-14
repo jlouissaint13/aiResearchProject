@@ -75,9 +75,31 @@ class RagService:
         self.active_model = active_model
         self.prompt_type = prompt_type
         self.provider = provider
+
+        self.data_visualization_mode()
+
         answer = self.model_run()
         print(answer)
         return answer
+
+
+
+    def data_visualization_mode(self):
+        if self.prompt_type == "data-visualization":
+            print("data visualization mode")
+            self.query += """Return JSON in this format:
+        {{
+            "chart_type": "bar" | "line" | "scatter",
+            "data": [
+                {{"column_1_name": value, "column_2_name": value, ...}},
+                {{"column_1_name": value, "column_2_name": value, ...}}
+            ]
+        }}
+        
+        For example, for a simple bar chart of two patients' VCN, return:
+        {{"chart_type": "bar", "data": [{"patient": "Patient 1", "vcn": 1.5}, {"patient": "Patient 2", "vcn": 2.1}]}}
+        """
+
 
     @staticmethod
     def prompt_builder(prompt_type):
@@ -92,6 +114,7 @@ class RagService:
 
 
 def get_research_prompt(mode):
+
     if mode == "deep-research":
         return """
 You are a **Research Analyst**.
@@ -142,7 +165,26 @@ QUESTION:
 
 RESPONSE:
 """
+    elif mode == "data-visualization":
+        return """
+    You are a **JSON Extraction Analyst**.
+    Your response **MUST** be a single, valid JSON object and nothing else.
+    Do NOT write any explanations or conversational text.
 
+    Analyze the CONTEXT to answer the QUESTION.
+    
+    The QUESTION itself contains the **full instructions** and the
+    **required JSON format**. Follow the instructions in the
+    QUESTION field exactly.
+
+    CONTEXT:
+    {context}
+
+    QUESTION:
+    {query}
+
+    JSON_RESPONSE:
+    """
 #if blank just return deep
     else:
        return """
