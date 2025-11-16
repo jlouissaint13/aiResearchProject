@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 class PasswordResetService:
         def __init__(self):
-            from backend.repository.UserRepository import UserRepository
+            from backend.repository.PasswordResetRepository import UserRepository
             self.user_repo = UserRepository()
             self.conn = sqlite3.connect("sql.db", check_same_thread=False)
             self.cursor = self.conn.cursor()

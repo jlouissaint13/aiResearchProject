@@ -4,9 +4,11 @@ from flask import jsonify,request,Blueprint
 from backend.services.OpenAIService import OpenAIService
 from backend.services.GeminiService import GeminiService
 from backend.services.ModelSettingsService import ModelSettingsService
+from backend.services.PDFManagerService import PDFManagerService
+
 model_settings_blueprint = Blueprint("model_settings",__name__)
 model_settings_service = ModelSettingsService()
-
+pdf_manager_service = PDFManagerService()
 
 @model_settings_blueprint.route("/change_settings")
 def change_settings():
@@ -56,4 +58,16 @@ def get_model_settings():
     response =  model_settings_service.retrieve_user_settings(user_id)
 
     return response, 200
+
+@model_settings_blueprint.route("/data_visualization_allowed",methods=['POST'])
+def data_visualization_allowed():
+    data = request.get_json()
+    user_id = data.get("user_id")
+
+    if model_settings_service.data_visualization_allowed(user_id) == False:
+        return "no" , 404
+
+    return "success" , 200
+
+
 

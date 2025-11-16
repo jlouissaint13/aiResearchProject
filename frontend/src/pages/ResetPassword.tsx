@@ -53,6 +53,13 @@ export default function ResetPassword() {
                 color: "#e0e0e0",
                 fontFamily: "Roboto, sans-serif",
                 p: 3,
+                overflowY: 'auto',
+                '& *': {
+                    outline: 'none !important',
+                },
+                '& *:focus': {
+                    outline: 'none !important',
+                },
             }}
         >
             <Box

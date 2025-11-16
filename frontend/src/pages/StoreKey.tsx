@@ -129,6 +129,13 @@ const ApiKeyInput = () => {
                     top: { xs: 16, md: 20 },
                     left: { xs: 16, md: 20 },
                     zIndex: 10,
+                    overflowY: 'auto',
+                    '& *': {
+                        outline: 'none !important',
+                    },
+                    '& *:focus': {
+                        outline: 'none !important',
+                    },
                 }}
             >
                 <Button

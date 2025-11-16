@@ -59,8 +59,6 @@ def delete_pdf():
     
     
     return "success", 200
-  
-  
-  
+
 
     

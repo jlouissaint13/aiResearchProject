@@ -3,7 +3,7 @@ import random
 from backend.services.PasswordResetService import PasswordResetService
 from flask import Blueprint, request, jsonify
 from datetime import datetime, timedelta
-from backend.repository.UserRepository import UserRepository
+from backend.repository.PasswordResetRepository import UserRepository
 from backend.utils.EmailService import EmailService, send_email
 
 

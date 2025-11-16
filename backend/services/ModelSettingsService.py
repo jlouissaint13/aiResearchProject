@@ -1,12 +1,13 @@
+
 from backend.repository.ModelSettingsRepository import ModelSettingsRepository
+from backend.services.PDFManagerService import PDFManagerService
 
 
 class ModelSettingsService:    
     
     def __init__(self):
         self.model_repository = ModelSettingsRepository()
-    
-    
+        self.pdf_manager_service = PDFManagerService()
     def change_settings(self,active_model,prompt_type,provider,user_id):
         self.model_repository.change_settings_by_user_id(active_model,prompt_type,provider,user_id)
         
@@ -28,6 +29,8 @@ class ModelSettingsService:
        }
        return model_settings
 
+
+
     def llama_model(self):
         list = [{
             "id": "llama3.2",
@@ -36,3 +39,18 @@ class ModelSettingsService:
         }]
 
         return list
+
+
+    def data_visualization_allowed(self,user_id):
+
+
+        model_settings = self.retrieve_user_settings(user_id)
+        provider = model_settings['provider']
+        print(provider)
+        total_documents = len(self.pdf_manager_service.get_searchable_documents(user_id))
+        print(total_documents)
+        if total_documents == 0 or provider != 'openai':
+            return False
+
+        return True
+

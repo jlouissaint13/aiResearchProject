@@ -83,6 +83,13 @@ export default function VerifyCode() {
                     width: "100%",
                     maxWidth: 400,
                     border: "1px solid rgba(255, 255, 255, 0.05)",
+                    overflowY: 'auto',
+                    '& *': {
+                        outline: 'none !important',
+                    },
+                    '& *:focus': {
+                        outline: 'none !important',
+                    },
                 }}
             >
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, mb: 1 }}>

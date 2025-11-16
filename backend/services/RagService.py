@@ -76,29 +76,74 @@ class RagService:
         self.prompt_type = prompt_type
         self.provider = provider
 
+        answer = self.model_run()
+        print(answer)
+        return answer
+    
+
+    #don't forget to add validation for provider does not have to be here
+    #doesn't work consistently with ollama
+    def response_data_visualization(self,text,active_model,provider,user_id):
+        self.query = text
+        self.user_id = user_id
+        self.active_model = active_model
+        self.prompt_type = "data-visualization"
+        self.provider = provider
+
         self.data_visualization_mode()
 
         answer = self.model_run()
         print(answer)
+        
         return answer
+
 
 
 
     def data_visualization_mode(self):
         if self.prompt_type == "data-visualization":
-            print("data visualization mode")
+
             self.query += """Return JSON in this format:
-        {{
-            "chart_type": "bar" | "line" | "scatter",
-            "data": [
-                {{"column_1_name": value, "column_2_name": value, ...}},
-                {{"column_1_name": value, "column_2_name": value, ...}}
-            ]
-        }}
-        
-        For example, for a simple bar chart of two patients' VCN, return:
-        {{"chart_type": "bar", "data": [{"patient": "Patient 1", "vcn": 1.5}, {"patient": "Patient 2", "vcn": 2.1}]}}
-        """
+    {
+    "chart_type": "bar" | "line" | "scatter",
+    "title": "A descriptive string title for the chart",
+    "data": [
+        {"key_1": number_value, "key_2": number_value, ...},
+        ...
+    ],
+    "xKey": "string_key_for_x_axis",
+    "yKey": "string_key_for_y_axis",
+    "xLabel": "A human-readable label for the x-axis",
+    "yLabel": "A human-readable label for the y-axis"
+    }
+
+    CRITICAL RULES:
+    1.  The entire response MUST be a single, valid JSON object.
+    2.  All *values* within the objects in the 'data' array MUST be NUMBERS (int or float).
+    3.  Do NOT use non-numeric strings for values (e.g., "N/A", "3.5 months").
+    4.  You MUST normalize all data into numbers. For example:
+    - "3.5 months" MUST be returned as `3.5`.
+    - "7 years" (if the unit is months) MUST be returned as `84`.
+    - "22%" MUST be returned as `22.0`.
+    5.  The `xKey` and `yKey` values MUST be strings that exactly match a key present in ALL objects within the 'data' array.
+    6.  `xLabel` and `yLabel` MUST be descriptive, human-readable strings.
+
+    EXAMPLE:
+    {
+    "chart_type": "scatter",
+    "title": "VCN vs Time Analysis",
+    "data": [
+        { "vcn": 1.5, "time_months": 3.5 },
+        { "vcn": 2.1, "time_months": 6.5 },
+        { "vcn": 1.8, "time_months": 4.2 },
+        { "vcn": 2.5, "time_months": 7.8 }
+    ],
+    "xKey": "vcn",
+    "yKey": "time_months",
+    "xLabel": "VCN Value",
+    "yLabel": "Time (Months)"
+    }
+    """
 
 
     @staticmethod
@@ -185,7 +230,7 @@ RESPONSE:
 
     JSON_RESPONSE:
     """
-#if blank just return deep
+#if blank just return deep research prompt
     else:
        return """
 You are a **Research Analyst**.

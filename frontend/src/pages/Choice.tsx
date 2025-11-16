@@ -6,31 +6,36 @@ import HourglassBottomIcon from '@mui/icons-material/HourglassBottom';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import {useNavigate} from "react-router-dom";
 import SettingsIcon from "@mui/icons-material/Settings";
-import {useEffect} from "react";
+import BarChartIcon from '@mui/icons-material/BarChart';
+import {useEffect, useState} from "react";
+import axios from "axios";
 const Choice = () => {
 
 
     const navigate = useNavigate()
+    const [isDataVisualDisabled,setDataVisualDisabled] = useState(true);
 
     const menuItemsLoggedIn = [
-        {text: "Chat", icon: <LiveHelpIcon />, value: "chat" },
-        {text: "Temporary Chat", icon: <HourglassBottomIcon />, value: "chatTemp" },
-        {text: "PDF Manager", icon: <PictureAsPdfIcon />, value: "checkDB" },
-        {text: "Enter API Key", icon: <VpnKeyIcon /> , value: "apiKey" },
-        {text: "Settings", icon:<SettingsIcon /> , value: "settings"},
-        {text: "Logout", icon: <ExitToAppIcon />, value: "logout" }
+        {text: "Chat", icon: <LiveHelpIcon />, value: "chat", disabled: false },
+        {text: "Temporary Chat", icon: <HourglassBottomIcon />, value: "chatTemp", disabled: false },
+        {text: "Data Visualization (BETA)", icon: <BarChartIcon />, value: "dataVisual", disabled: isDataVisualDisabled },
+        {text: "PDF Manager", icon: <PictureAsPdfIcon />, value: "checkDB", disabled: false },
+        {text: "Enter API Key", icon: <VpnKeyIcon />, value: "apiKey", disabled: false },
+        {text: "Settings", icon:<SettingsIcon />, value: "settings", disabled: false },
+        {text: "Logout", icon: <ExitToAppIcon />, value: "logout", disabled: false }
     ];
 
     const guestMenuItems = [
-        {text: "Chat", icon: <LiveHelpIcon />, value: "chat" },
-        {text: "Exit", icon: <ExitToAppIcon />, value: "logout" }
-    ]
+        {text: "Chat", icon: <LiveHelpIcon />, value: "chat", disabled: false },
+        {text: "Exit", icon: <ExitToAppIcon />, value: "logout", disabled: false }
+    ];
 
     // @ts-ignore
     function handleMenu(value) {
         switch (value) {
             case "chat": navigate("/ChatBot"); break;
             case "chatTemp": navigate("/chatbotTemp"); break;
+            case "dataVisual": navigate("/dataVisual"); break;
             case "insertPDF": navigate("/uploadPDF"); break;
             case "apiKey": navigate("/StoreKey"); break;
             case "checkDB": navigate("/PDFManager"); break;
@@ -45,9 +50,8 @@ const Choice = () => {
     }
 
     useEffect(() => {
-
+        retrieveUserSettings()
     }, []);
-
 
 
     function menuItemLogic() {
@@ -56,6 +60,33 @@ const Choice = () => {
 
         return guestMenuItems;
     }
+
+
+    async function retrieveUserSettings() {
+        const userId : string | null = localStorage.getItem("userID");
+
+
+        try {
+            const response = await axios.post('http://localhost:8000/model_settings/data_visualization_allowed', {
+                user_id: userId
+            });
+
+            if (response.status === 200 && response.data) {
+                    setDataVisualDisabled(false)
+                    
+
+            } else if (response.status === 404) {
+                return
+            }
+        } catch (error : any) {
+            if (error.response && error.response.status === 404) {
+
+            } else {
+                console.error("An error occurred while retrieving user settings:", error);
+            }
+        }
+    }
+
 
 
 
@@ -111,6 +142,7 @@ const Choice = () => {
                         <ListItem key={index} disablePadding sx={{ mb: 1.5 }}>
                             <ListItemButton
                                 onClick={() => handleMenu(item.value)}
+                                disabled={item.disabled}
                                 sx={{
                                     py: 1.25,
                                     px: 2,

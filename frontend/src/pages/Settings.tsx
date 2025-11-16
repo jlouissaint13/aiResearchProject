@@ -87,7 +87,6 @@ const promptDescriptions = {
     'deep-research': 'Provides a thorough, structured, and in-depth answer. It explains connections and sticks strictly to the provided facts.',
     'creative': 'Generates a thoughtful and imaginative response. It connects ideas, draws new insights, and explores different angles based on the text.',
     'short-and-sweet': 'Delivers a concise, clear, and direct answer. It\'s accurate and gets right to the point, avoiding any filler.',
-    'data-visualization': 'Creates clear, accurate visuals using only bar, line, or scatter charts. It focuses on simplicity, readability, and correctly representing the data.'
 };
 
 const Settings = () => {
@@ -456,6 +455,13 @@ const Settings = () => {
                 top: { xs: 16, md: 20 },
                 left: { xs: 16, md: 20 },
                 zIndex: 10,
+                overflowY: 'auto',
+                '& *': {
+                    outline: 'none !important',
+                },
+                '& *:focus': {
+                    outline: 'none !important',
+                },
             }}>
                 <Button
                     onClick={handleBack}
@@ -470,6 +476,7 @@ const Settings = () => {
                         '&:hover': {
                             bgcolor: 'rgba(255, 255, 255, 0.05)',
                             color: '#e0e0e0',
+
                         },
                     }}
                 >
@@ -679,13 +686,6 @@ const Settings = () => {
                                         value="short-and-sweet"
                                         control={<Radio sx={{ color: '#8e8e8e', '&.Mui-checked': { color: '#1a73e8' } }} />}
                                         label="Short and Sweet"
-                                    />
-                                </Tooltip>
-                                <Tooltip title={promptDescriptions['data-visualization']} placement="right">
-                                    <FormControlLabel
-                                        value="data-visualization"
-                                        control={<Radio sx={{ color: '#8e8e8e', '&.Mui-checked': { color: '#1a73e8' } }} />}
-                                        label="Data Visualization"
                                     />
                                 </Tooltip>
                             </RadioGroup>

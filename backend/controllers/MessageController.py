@@ -1,4 +1,4 @@
-
+import json
 from flask import Blueprint, request, jsonify
 
 from backend.services.MessageService import MessageService
@@ -36,14 +36,19 @@ def message_handler():
     user_id = data.get("user_id")
     conversation_id = data.get("conversation_id")
     logged_in = data.get("logged_in")
-    message_service.send_user_message(message_id, conversation_id, user_content, role, user_id,logged_in)
+    mode = data.get("mode")
+
+    if mode != 'data_visual':
+        message_service.send_user_message(message_id, conversation_id, user_content, role, user_id,logged_in)
     
     
                                           
-    response = message_service.send_model_message(conversation_id,user_id,user_content,logged_in)
+        response = message_service.send_model_message(conversation_id,user_id,user_content,logged_in)
 
-    conversation_service.conversation_last_modified(conversation_id,user_id)
-
-
+        conversation_service.conversation_last_modified(conversation_id,user_id)
+    else:
+       chart_data = json.loads(message_service.send_model_message_data_visual(user_content, user_id, logged_in))
+       return jsonify(chart_data)
+    
     return response
     

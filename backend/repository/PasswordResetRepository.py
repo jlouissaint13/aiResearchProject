@@ -23,7 +23,6 @@ class UserRepository:
         query = "SELECT reset_code, expires_at FROM password_resets WHERE email=?"
         with sqlite3.connect(self.db) as conn:
             result = conn.execute(query, (email,)).fetchone()
-            print(result)
             return result
 
 

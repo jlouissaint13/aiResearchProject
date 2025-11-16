@@ -11,6 +11,7 @@ import ChatBotTemporary from "./ChatBotTemporary.tsx";
 import ResetPasswordForm from "./PasswordResetForm.tsx";
 import VerifyCode from "./VerifyCode.tsx";
 import ResetPassword from "./ResetPassword.tsx";
+import DataVisualizer from "./DataVisualizer.tsx";
 const App = () => (
     <div className="App">
         <BrowserRouter>
@@ -27,6 +28,7 @@ const App = () => (
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/verify-code" element={<VerifyCode />} />
                 <Route path="/reset-password-form" element={<ResetPasswordForm />} />
+                <Route path="dataVisual" element={<DataVisualizer/>} />
             </Routes>
         </BrowserRouter>
     </div>

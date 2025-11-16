@@ -187,6 +187,13 @@ const PdfManager = () => {
                     top: { xs: 16, md: 20 },
                     left: { xs: 16, md: 20 },
                     zIndex: 10,
+                    overflowY: 'auto',
+                    '& *': {
+                        outline: 'none !important',
+                    },
+                    '& *:focus': {
+                        outline: 'none !important',
+                    },
                 }}
             >
                 <Button
@@ -200,6 +207,7 @@ const PdfManager = () => {
                         fontSize: '0.85rem',
                         p: 0.5,
                         borderRadius: 1,
+
                         '&:hover': {
                             bgcolor: 'rgba(255, 255, 255, 0.05)',
                             color: '#e0e0e0',

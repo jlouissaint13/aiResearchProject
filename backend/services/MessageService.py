@@ -14,11 +14,8 @@ class MessageService:
        
        if logged_in == 'true':
           self.message_repository.insert_message_by_id(message_id, conversation_id, content, role, user_id)
+           
         
-        
-        
-       
-    
     def get_messages_by_id(self,user_id,conversation_id):
        return self.message_repository.retrieve_all_messages_by_id(user_id,conversation_id)
        
@@ -37,9 +34,6 @@ class MessageService:
             active_model = "llama3.2"
             prompt_type = "deep-research"
             provider = "meta"
-
-
-
         
         model_response = self.rag_service.response(user_content,active_model,prompt_type,provider,user_id)
 
@@ -64,3 +58,19 @@ class MessageService:
         
         return response
         
+    def send_model_message_data_visual(self,user_content,user_id,logged_in):
+        
+        
+        current_user_settings = self.model_settings.retrieve_user_settings(user_id)
+        active_model = current_user_settings.get("activeModel")
+        provider = current_user_settings.get("provider")
+        
+        model_response = self.rag_service.response_data_visualization(user_content,active_model,provider,user_id)
+
+        model_response = model_response.content
+        print(type(model_response))
+        return model_response
+        
+
+
+

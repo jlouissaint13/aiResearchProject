@@ -33,3 +33,5 @@ def delete_user():
     user_id = data.get('user_id')
     user_settings_service.delete_user_information(user_id)
     return "success", 200
+
+
