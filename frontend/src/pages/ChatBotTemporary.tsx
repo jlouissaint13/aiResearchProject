@@ -255,7 +255,6 @@ const ChatBot = () => {
                     conversationID: conversationID,
                     lastModified: currentTime
                 };
-                setRecentChats(prevState => sortChats([chatForState, ...prevState]))
             }
 
         } catch (error) {

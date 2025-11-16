@@ -46,9 +46,7 @@ class ModelSettingsService:
 
         model_settings = self.retrieve_user_settings(user_id)
         provider = model_settings['provider']
-        print(provider)
         total_documents = len(self.pdf_manager_service.get_searchable_documents(user_id))
-        print(total_documents)
         if total_documents == 0 or provider != 'openai':
             return False
 
